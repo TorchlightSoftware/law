@@ -170,7 +170,7 @@ Our approach to policies was inspired by the filter lifecycle from Ruby on Rails
 
 The separation of Express and Connect has influenced our decision to do the same.  I think that while frameworks can lead to gains in terms of productivity, a library has greater potential for re-use.
 
-Many thanks to @wearefractal (@amurray, @contra) and Aaron @JosephJNK for conversations and collaboration on application design with functional and declarative programming.
+Many thanks to @wearefractal (@amurray, @contra), @JosephJNK, and @uberscientist for conversations and collaboration on application design with functional and declarative programming.
 
 ## The Fine Print
 
