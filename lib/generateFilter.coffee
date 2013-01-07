@@ -13,5 +13,5 @@ module.exports = (name, service) ->
       # call the next function in the stack
       next null, final
 
-  wrapped.filterName = name
+  wrapped.serviceName = name
   return wrapped
