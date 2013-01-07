@@ -1,7 +1,6 @@
 {chain} = require './util'
 
 lookupArgumentFilters = require './lookupArgumentFilters'
-{serviceInput, serviceOutput} = require './standardFilters'
 
 module.exports = (services, argumentTypes) ->
 
