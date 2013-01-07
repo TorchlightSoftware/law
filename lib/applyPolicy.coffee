@@ -34,10 +34,14 @@ getPolicy = (services, policy) ->
     else if rule.except?
       validateServices rule.except
 
-      # don't apply it to the specified rules, or to any other filters
       for service in Object.keys services
-        unless (service in rule.except or startsWith service, policy.filterPrefix)
-          policyMap[service].push filters...
+
+        # don't apply it to the exceptions, to any other filters, or to things not matching applyTo
+        continue if service in rule.except
+        continue if policy.filterPrefix and startsWith service, policy.filterPrefix
+        continue if policy.applyTo and not service.match policy.applyTo
+
+        policyMap[service].push filters...
 
   return policyMap
 

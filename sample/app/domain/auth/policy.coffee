@@ -1,4 +1,5 @@
 module.exports =
+  applyTo: /^[^\/]+$/ # only top level
   filterPrefix: 'filters'
   rules:
     [
