@@ -5,7 +5,7 @@ module.exports = s =
   create: (location, language=[], policy=[]) ->
     defs = s.load location
     services = s.process defs, language
-    final = applyPolicy services, policy
+    final = s.applyPolicy services, policy
 
     return final
 

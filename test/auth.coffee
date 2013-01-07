@@ -2,10 +2,7 @@ should = require 'should'
 {join} = require 'path'
 
 # lib stuff
-getServices = require '../lib/getServices'
-wrapServicesInMiddleware = require '../lib/wrapServicesInMiddleware'
-applyPolicy = require '../lib/applyPolicy'
-printFilters = require '../lib/printFilters'
+{load, process, applyPolicy, print, create, print} = require '../lib/main'
 
 # sample stuff
 argTypes = require '../sample/app/domain/auth/argumentTypes'
@@ -14,7 +11,7 @@ policy = require '../sample/app/domain/auth/policy'
 
 describe "getServices", ->
   it 'should load a set of services', (done) ->
-    serviceDefs = getServices serviceLocation
+    serviceDefs = load serviceLocation
 
     (typeof serviceDefs).should.eql 'object'
     (typeof serviceDefs.login).should.eql 'function'
@@ -23,8 +20,8 @@ describe "getServices", ->
 
 describe "wrapServicesInMiddleware", ->
   it 'should generate usable services', (done) ->
-    serviceDefs = getServices serviceLocation
-    services = wrapServicesInMiddleware serviceDefs, argTypes
+    serviceDefs = load serviceLocation
+    services = process serviceDefs, argTypes
 
     (typeof services.login).should.eql 'function'
     (typeof services.getRole).should.eql 'function'
@@ -32,8 +29,8 @@ describe "wrapServicesInMiddleware", ->
 
 describe "attachFilters", ->
   it 'should apply policy to services', (done) ->
-    serviceDefs = getServices serviceLocation
-    services = wrapServicesInMiddleware serviceDefs, argTypes
+    serviceDefs = load serviceLocation
+    services = process serviceDefs, argTypes
     filteredServices = applyPolicy services, policy
 
     (typeof services.login).should.eql 'function'
@@ -42,9 +39,7 @@ describe "attachFilters", ->
 
 describe "full stack", ->
   beforeEach (done) ->
-    serviceDefs = getServices serviceLocation
-    services = wrapServicesInMiddleware serviceDefs, argTypes
-    @services = applyPolicy services, policy
+    @services = create serviceLocation, argTypes, policy
     done()
 
   it 'should allow login to continue unhindered', (done) ->
@@ -82,6 +77,6 @@ describe "full stack", ->
 
   describe 'printFilters', ->
     it 'should work', (done) ->
-      printout = printFilters @services
+      printout = print @services
       console.log printout
       done()
