@@ -35,22 +35,30 @@ module.exports = util =
 
   # execute a stack of services (similar to async.waterfall)
   chain: (serviceName, input, stack, cb) ->
+
+    # defaults
+    serviceName ||= 'Service'
+    input ||= {}
     cb ||= ->
+
+    # validations
     unless (typeof input) is 'object'
       return new Error "#{serviceName} requires an arguments object as the first argument."
     unless Array.isArray(stack) and stack.length > 0
       return cb()
 
+    # stack iterator
     callNext = (index, args) ->
 
       # exit condition
       unless index < stack.length
-        unless (typeof args) is 'object'
-          return cb new Error "#{serviceName} must return an object."
         return cb null, args
 
       # run next service
       stack[index] args, (err, results) ->
+        results ||= {}
+        unless (typeof results) is 'object'
+          return cb new Error "#{stack[index].serviceName or serviceName} must return an object."
         return cb err if err
         callNext index + 1, results
 
