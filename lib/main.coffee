@@ -2,8 +2,12 @@ module.exports = s =
 
   # Convenience method: load from file system and wrap in middleware
   # returns {serviceName: serviceDef}
-  auto: (dirname) ->
-    s.wrap s.load dirname
+  create: (location, language=[], policy=[]) ->
+    defs = s.load location
+    services = s.process defs, language
+    final = applyPolicy services, policy
+
+    return final
 
   # loads services from the file system
   # returns {serviceName: serviceDef}
@@ -15,4 +19,7 @@ module.exports = s =
 
   # wraps services with access/lookup policy
   # returns {serviceName: wrappedService}
-  stack: (services, policy) ->
+  applyPolicy: require './applyPolicy'
+
+  # prints out the stack of filters applied to each service
+  print: require './printFilters'
