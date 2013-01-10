@@ -1,4 +1,4 @@
-{chain} = require './util'
+chain = require './chain'
 
 lookupArgumentFilters = require './lookupArgumentFilters'
 
