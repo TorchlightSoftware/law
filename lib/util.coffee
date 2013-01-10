@@ -29,7 +29,7 @@ module.exports = util =
   # merge source hash into target
   merge: (target, source) ->
     return target unless (typeof target) is 'object' and (typeof source) is 'object'
-    for name, value in source
+    for name, value of source
       target[name] = value
     return target
 
