@@ -52,20 +52,20 @@ describe "full stack", ->
   it 'should prevent dashboard from being accessed', (done) ->
     @services.dashboard {}, (err, result) ->
       should.exist err
-      err.should.eql "filters/isLoggedIn requires 'sessionId' to be defined."
+      err.should.eql new Error "filters/isLoggedIn requires 'sessionId' to be defined."
       done()
 
   describe 'getRole', ->
     it 'should require sessionId', (done) ->
       @services.getRole {}, (err, result) ->
         should.exist err
-        err.should.eql "getRole requires 'sessionId' to be defined."
+        err.should.eql new Error "getRole requires 'sessionId' to be defined."
         done()
 
     it 'should validate sessionId', (done) ->
       @services.getRole {sessionId: 'foo'}, (err, result) ->
         should.exist err
-        err.should.eql "getRole requires 'sessionId' to be a valid SessionId."
+        err.should.eql new Error "getRole requires 'sessionId' to be a valid SessionId."
         done()
 
     it 'should pass valid arguments', (done) ->

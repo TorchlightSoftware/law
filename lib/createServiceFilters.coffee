@@ -23,7 +23,7 @@ generateValidations = (serviceName, name, types, required) ->
 
     # only check if it's not present but required
     if not args[name]? and required
-      return next "#{serviceName} requires '#{name}' to be defined."
+      return next new Error "#{serviceName} requires '#{name}' to be defined."
     else
       return next()
 
@@ -37,7 +37,7 @@ generateValidations = (serviceName, name, types, required) ->
 
         # run type validation
         t.validation args[name], (passed) ->
-          return next "#{serviceName} requires '#{name}' to be a valid #{t.typeName}." unless passed
+          return next new Error "#{serviceName} requires '#{name}' to be a valid #{t.typeName}." unless passed
           next()
 
   # remove any lookups/validations that weren't defined
