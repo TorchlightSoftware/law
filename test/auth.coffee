@@ -55,6 +55,12 @@ describe "full stack", ->
       err.should.eql new Error "filters/isLoggedIn requires 'sessionId' to be defined."
       done()
 
+  it 'should require results to be an object', (done) ->
+    @services.invalidReturn {}, (err, result) ->
+      should.exist err?.message, 'expected error'
+      err.message.should.eql 'invalidReturn must return an object.'
+      done()
+
   describe 'getRole', ->
     it 'should require sessionId', (done) ->
       @services.getRole {}, (err, result) ->

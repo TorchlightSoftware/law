@@ -8,6 +8,7 @@ module.exports =
         except: [
           'getRole'
           'login'
+          'invalidReturn'
         ]
       }
 
