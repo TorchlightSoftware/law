@@ -8,7 +8,7 @@ module.exports = (serviceName, input, stack, cb) ->
 
   # validations
   unless (typeof input) is 'object'
-    return new Error "#{serviceName} requires an arguments object as the first argument."
+    return cb (new Error "#{serviceName} requires an arguments object as the first argument."), {input: input}
   unless Array.isArray(stack) and stack.length > 0
     return cb()
 

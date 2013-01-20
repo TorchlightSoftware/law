@@ -31,3 +31,11 @@ describe 'chain', ->
       should.exist args, 'expected args'
       args.should.be.a 'object'
       done()
+
+  it 'should error on invalid input', (done) ->
+    chain = require '../lib/chain'
+
+    chain 'testService', 'foo', [], (err, args) ->
+      should.exist err?.message, 'expected error'
+      err.message.should.eql 'testService requires an arguments object as the first argument.'
+      done()
