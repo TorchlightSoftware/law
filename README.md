@@ -8,6 +8,8 @@ Law was designed to be a low level tool for tying together:
 
 Law lets you build services which are framework and transport agnostic. Its focus is on enforcing the business rules specific to your application.  In our applications, we have connected these services to REST, websockets, and a programmatic API through the use of adapters.  I present below an example that should help to tie in as connect middleware.  Hopefully there will be enough information here to make this a useful tool for those interested.  If you're having trouble getting things working, let me know.
 
+![Build Status](https://api.travis-ci.org/TorchlightSoftware/law.png)
+
 ## Application Files
 
 Following are some possible uses of Law.  Further options are described in the [extended documentation].
