@@ -32,13 +32,15 @@ generateValidations = (serviceName, name, types, required) ->
     if t.validation
       generateFilter "#{name}.isValid(#{t.typeName})", (args, next) ->
 
-        # continue if field wasn't required/isn't present
+        checkResult = (passed) ->
+          return next new Error "#{serviceName} requires '#{name}' to be a valid #{t.typeName}." unless passed
+          next()
+
+        # continue if field isn't present
         return next() unless args[name]
 
         # run type validation
-        t.validation args[name], (passed) ->
-          return next new Error "#{serviceName} requires '#{name}' to be a valid #{t.typeName}." unless passed
-          next()
+        t.validation args[name], checkResult, args
 
   # remove any lookups/validations that weren't defined
   return compact stack

@@ -8,8 +8,8 @@ module.exports = [
     defaultArgs: ['email', 'password']
   ,
     typeName: 'SessionId'
-    validation: (arg, assert) ->
-      assert (typeof arg is 'string') and arg.match redisId
+    validation: (arg, assert, {sessionId}) ->
+      assert sessionId? and (typeof arg is 'string') and arg.match redisId
     defaultArgs: ['sessionId']
   ,
     typeName: 'MongoId'
