@@ -53,6 +53,8 @@ describe "full stack", ->
     @services.dashboard {}, (err, result) ->
       should.exist err
       err.should.eql new Error "filters/isLoggedIn requires 'sessionId' to be defined."
+      for field in ['reason', 'fieldName', 'serviceName']
+        Object.keys(result).should.include field
       done()
 
   it 'should require results to be an object', (done) ->
@@ -72,6 +74,8 @@ describe "full stack", ->
       @services.getRole {sessionId: 'foo'}, (err, result) ->
         should.exist err
         err.should.eql new Error "getRole requires 'sessionId' to be a valid SessionId."
+        for field in ['reason', 'fieldName', 'serviceName', 'requiredType']
+          Object.keys(result).should.include field
         done()
 
     it 'should pass valid arguments', (done) ->

@@ -24,7 +24,7 @@ module.exports = (serviceName, input, stack, cb) ->
       results ||= {}
       unless (typeof results) is 'object'
         return cb (new Error "#{stack[index].serviceName or serviceName} must return an object."), {results: results}
-      return cb err, {} if err
+      return cb err, results if err
       callNext index + 1, results
 
   # begin execution

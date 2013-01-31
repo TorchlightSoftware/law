@@ -23,7 +23,13 @@ generateValidations = (serviceName, name, types, required) ->
 
     # only check if it's not present but required
     if not args[name]? and required
-      return next new Error "#{serviceName} requires '#{name}' to be defined."
+      meta =
+        reason: 'requiredField'
+        fieldName: name
+        serviceName: serviceName
+      error = new Error "#{serviceName} requires '#{name}' to be defined."
+      return next error, meta
+
     else
       return next()
 
@@ -32,12 +38,21 @@ generateValidations = (serviceName, name, types, required) ->
     if t.validation
       generateFilter "#{name}.isValid(#{t.typeName})", (args, next) ->
 
-        checkResult = (passed) ->
-          return next new Error "#{serviceName} requires '#{name}' to be a valid #{t.typeName}." unless passed
-          next()
-
         # continue if field isn't present
         return next() unless args[name]
+
+        checkResult = (passed) ->
+          unless passed
+            meta =
+              reason: 'invalidValue'
+              fieldName: name
+              serviceName: serviceName
+              requiredType: t.typeName
+            error = new Error "#{serviceName} requires '#{name}' to be a valid #{t.typeName}."
+            return next error, meta
+
+          else
+            return next()
 
         # run type validation
         t.validation args[name], checkResult, args

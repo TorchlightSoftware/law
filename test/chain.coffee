@@ -32,6 +32,20 @@ describe 'chain', ->
       args.should.be.a 'object'
       done()
 
+  it 'should retain meta info in case of an error', (done) ->
+    chain = require '../lib/chain'
+
+    fooService = (args, done) ->
+      error = new Error 'yo'
+      done error, {reason: 'just cus'}
+
+    chain 'testService', {}, [fooService], (err, args) ->
+      should.exist err, 'expected error'
+      err.should.eql new Error 'yo'
+      should.exist args, 'expected args'
+      args.reason.should.eql 'just cus'
+      done()
+
   it 'should error on invalid input', (done) ->
     chain = require '../lib/chain'
 

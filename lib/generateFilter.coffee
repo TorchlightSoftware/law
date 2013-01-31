@@ -3,7 +3,6 @@
 module.exports = (name, service) ->
   wrapped = (args, next) ->
     service args, (err, results) ->
-      return next err, args if err or not results
 
       # merge the results of the filter
       final = {}
@@ -11,7 +10,7 @@ module.exports = (name, service) ->
       merge final, results
 
       # call the next function in the stack
-      next null, final
+      next err, final
 
   wrapped.serviceName = name
   return wrapped
