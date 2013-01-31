@@ -1,7 +1,7 @@
 createServiceFilters = require './createServiceFilters'
 
-module.exports = (serviceName, serviceDef, argumentTypes) ->
-  {generateDefaultValidations, generateValidationsFromParams} = createServiceFilters argumentTypes
+module.exports = (serviceName, serviceDef, jargon) ->
+  {generateDefaultValidations, generateValidationsFromParams} = createServiceFilters jargon
 
   switch typeof serviceDef
 

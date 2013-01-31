@@ -2,13 +2,13 @@ chain = require './chain'
 
 lookupArgumentFilters = require './lookupArgumentFilters'
 
-module.exports = (services, argumentTypes) ->
+module.exports = (services, jargon) ->
 
   wrappedServices = {}
   for serviceName, serviceDef of services
     do (serviceName, serviceDef) ->
 
-      typeValidations = lookupArgumentFilters serviceName, serviceDef, argumentTypes
+      typeValidations = lookupArgumentFilters serviceName, serviceDef, jargon
       service = serviceDef.service or serviceDef
       throw new Error "Could not find function definition for service '#{serviceName}'." unless (typeof service) is 'function'
       service.serviceName = serviceName

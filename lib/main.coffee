@@ -2,9 +2,9 @@ module.exports = s =
 
   # Convenience method: load from file system and wrap in middleware
   # returns {serviceName: serviceDef}
-  create: (location, language=[], policy=[]) ->
+  create: (location, jargon=[], policy=[]) ->
     defs = s.load location
-    services = s.process defs, language
+    services = s.process defs, jargon
     final = s.applyPolicy services, policy
 
     return final
@@ -15,7 +15,7 @@ module.exports = s =
   load: require './getServices'
 
   # processes service definitions into functions
-  # accepts (services, language)
+  # accepts (services, jargon)
   # returns {serviceName: service}
   process: require './wrapServicesInMiddleware'
 

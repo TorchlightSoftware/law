@@ -5,7 +5,7 @@ should = require 'should'
 {load, process, applyPolicy, print, create, print} = require '../lib/main'
 
 # sample stuff
-argTypes = require '../sample/app/domain/auth/argumentTypes'
+jargon = require '../sample/app/domain/auth/jargon'
 serviceLocation = join __dirname, '../sample/app/domain/auth/services'
 policy = require '../sample/app/domain/auth/policy'
 
@@ -21,7 +21,7 @@ describe "getServices", ->
 describe "wrapServicesInMiddleware", ->
   it 'should generate usable services', (done) ->
     serviceDefs = load serviceLocation
-    services = process serviceDefs, argTypes
+    services = process serviceDefs, jargon
 
     (typeof services.login).should.eql 'function'
     (typeof services.getRole).should.eql 'function'
@@ -30,7 +30,7 @@ describe "wrapServicesInMiddleware", ->
 describe "attachFilters", ->
   it 'should apply policy to services', (done) ->
     serviceDefs = load serviceLocation
-    services = process serviceDefs, argTypes
+    services = process serviceDefs, jargon
     filteredServices = applyPolicy services, policy
 
     (typeof services.login).should.eql 'function'
@@ -39,7 +39,7 @@ describe "attachFilters", ->
 
 describe "full stack", ->
   beforeEach (done) ->
-    @services = create serviceLocation, argTypes, policy
+    @services = create serviceLocation, jargon, policy
     done()
 
   it 'should allow login to continue unhindered', (done) ->

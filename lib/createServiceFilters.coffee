@@ -61,13 +61,13 @@ generateValidations = (serviceName, name, types, required) ->
   return compact stack
 
 module.exports =
-  (argumentTypes) ->
+  (jargon) ->
 
     # get a list of filter functions for a set of required/optional fields
     generateDefaultValidations: (serviceName, fieldNames, required) ->
       validations =
         for name in fieldNames
-          types = (t for t in argumentTypes when t.defaultArgs and name in t.defaultArgs)
+          types = (word for word in jargon when word.defaultArgs and name in word.defaultArgs)
           vals = generateValidations serviceName, name, types, required
           vals
 
@@ -88,7 +88,7 @@ module.exports =
 
           else
             param.validation = [param.validation] unless Array.isArray param.validation
-            types = (t for t in argumentTypes when t.typeName in param.validation)
+            types = (word for word in jargon when word.typeName in param.validation)
             generateValidations serviceName, param.name, types, param.required
 
       return flatten validations
