@@ -1,4 +1,4 @@
-{addTo, compact, flatten} = require './util'
+{getType, addTo, compact, flatten, merge} = require './util'
 generateFilter = require './generateFilter'
 
 # generate validations that will be added to the filter stack
@@ -13,7 +13,16 @@ generateValidations = (serviceName, name, types, required) ->
         # perform lookup if arg is not present
         if not args[name]?
           t.lookup args, (err, result) ->
-            args[name] = result
+
+            if err
+              args =
+                reason: 'lookupFailed'
+                fieldName: name
+                serviceName: serviceName
+                args: args
+            else
+              args[name] = result
+
             next err, args
         else
           next()
@@ -23,12 +32,14 @@ generateValidations = (serviceName, name, types, required) ->
 
     # only check if it's not present but required
     if not args[name]? and required
-      meta =
+      context =
         reason: 'requiredField'
         fieldName: name
         serviceName: serviceName
+        args: args
+
       error = new Error "#{serviceName} requires '#{name}' to be defined."
-      return next error, meta
+      return next error, context
 
     else
       return next()
@@ -41,21 +52,25 @@ generateValidations = (serviceName, name, types, required) ->
         # continue if field isn't present
         return next() unless args[name]
 
-        checkResult = (passed) ->
+        context =
+          fieldName: name
+          value: args[name]
+          serviceName: serviceName
+          args: args
+
+        assert = (passed, extraContext) ->
           unless passed
-            meta =
-              reason: 'invalidValue'
-              fieldName: name
-              serviceName: serviceName
-              requiredType: t.typeName
+            merge context, {reason: 'invalidValue', requiredType: t.typeName}
+            merge context, extraContext
+
             error = new Error "#{serviceName} requires '#{name}' to be a valid #{t.typeName}."
-            return next error, meta
+            return next error, context
 
           else
             return next()
 
         # run type validation
-        t.validation args[name], checkResult, args
+        t.validation context, assert
 
   # remove any lookups/validations that weren't defined
   return compact stack
@@ -83,7 +98,7 @@ module.exports =
             throw new Error "#{serviceName}.paramSpecs must contain '#{field}'." unless field in param.keys()
 
           # find types and wrap in validations
-          if (typeof param.validation) is 'function'
+          if getType(param.validation) is 'Function'
             param.validation
 
           else

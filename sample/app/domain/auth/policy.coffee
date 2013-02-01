@@ -9,6 +9,7 @@ module.exports =
           'getRole'
           'login'
           'invalidReturn'
+          'sendEmail'
         ]
       }
 

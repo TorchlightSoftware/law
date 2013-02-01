@@ -51,8 +51,8 @@ describe "full stack", ->
 
   it 'should prevent dashboard from being accessed', (done) ->
     @services.dashboard {}, (err, result) ->
-      should.exist err
-      err.should.eql new Error "filters/isLoggedIn requires 'sessionId' to be defined."
+      should.exist err?.message, 'expected error'
+      err.message.should.eql "filters/isLoggedIn requires 'sessionId' to be defined."
       for field in ['reason', 'fieldName', 'serviceName']
         Object.keys(result).should.include field
       done()
@@ -66,14 +66,34 @@ describe "full stack", ->
   describe 'getRole', ->
     it 'should require sessionId', (done) ->
       @services.getRole {}, (err, result) ->
-        should.exist err
-        err.should.eql new Error "getRole requires 'sessionId' to be defined."
+        should.exist err?.message, 'expected error'
+        err.message.should.eql "getRole requires 'sessionId' to be defined."
+        result.should.eql
+          reason: 'requiredField'
+          fieldName: 'sessionId'
+          serviceName: 'getRole'
+          args: {}
+        done()
+
+    it 'should validate stringyness', (done) ->
+      @services.sendEmail {email: [], subject: ''}, (err, result) ->
+        should.exist err?.message, 'expected error'
+        err.message.should.eql "sendEmail requires 'email' to be a valid String."
+        result.should.eql
+          fieldName: 'email'
+          value: []
+          serviceName: 'sendEmail'
+          args: {email: [], subject: ''}
+          reason: 'invalidValue'
+          requiredType: 'String'
+          message: 'email is not a string.'
+
         done()
 
     it 'should validate sessionId', (done) ->
       @services.getRole {sessionId: 'foo'}, (err, result) ->
-        should.exist err
-        err.should.eql new Error "getRole requires 'sessionId' to be a valid SessionId."
+        should.exist err?.message, 'expected error'
+        err.message.should.eql "getRole requires 'sessionId' to be a valid SessionId."
         for field in ['reason', 'fieldName', 'serviceName', 'requiredType']
           Object.keys(result).should.include field
         done()
@@ -83,6 +103,13 @@ describe "full stack", ->
         should.not.exist err
         should.exist result?.role, 'expected result.role'
         result.role.should.eql 'Supreme Commander'
+        done()
+
+    it 'should lookup accountId', (done) ->
+      @services.getRole {sessionId: 'ab23ab23ab23ab23'}, (err, result) ->
+        should.not.exist err
+        console.log result
+        should.exist result?.accountId, 'expected result.accountId'
         done()
 
   describe 'printFilters', ->

@@ -1,14 +1,15 @@
+{getType} = require './util'
 createServiceFilters = require './createServiceFilters'
 
 module.exports = (serviceName, serviceDef, jargon) ->
   {generateDefaultValidations, generateValidationsFromParams} = createServiceFilters jargon
 
-  switch typeof serviceDef
+  switch getType serviceDef
 
-    when 'function'
+    when 'Function'
       return []
 
-    when 'object'
+    when 'Object'
       validations = []
       {required, optional, params} = serviceDef
 

@@ -1,5 +1,5 @@
+{getType} = require './util'
 chain = require './chain'
-
 lookupArgumentFilters = require './lookupArgumentFilters'
 
 module.exports = (services, jargon) ->
@@ -10,7 +10,7 @@ module.exports = (services, jargon) ->
 
       typeValidations = lookupArgumentFilters serviceName, serviceDef, jargon
       service = serviceDef.service or serviceDef
-      throw new Error "Could not find function definition for service '#{serviceName}'." unless (typeof service) is 'function'
+      throw new Error "Could not find function definition for service '#{serviceName}'." unless getType(service) is 'Function'
       service.serviceName = serviceName
 
       # return wrapped service
@@ -27,7 +27,7 @@ module.exports = (services, jargon) ->
       wrapper.prepend = (services) ->
         if services and Array.isArray services
           wrapper.callStack.unshift services...
-        else if (typeof services) is 'function'
+        else if getType(services) is 'Function'
           wrapper.callStack.unshift services
 
       # build up static portion of call stack

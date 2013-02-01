@@ -1,5 +1,7 @@
 module.exports = util =
 
+  getType: (obj) -> Object.prototype.toString.call(obj).slice 8, -1
+
   # works like concat, but modifies array
   addTo: (arr, addition) ->
     if Array.isArray addition
@@ -28,7 +30,7 @@ module.exports = util =
 
   # merge source hash into target
   merge: (target, source) ->
-    return target unless (typeof target) is 'object' and (typeof source) is 'object'
+    return target unless util.getType(target) is 'Object' and util.getType(source) is 'Object'
     for name, value of source
       target[name] = value
     return target

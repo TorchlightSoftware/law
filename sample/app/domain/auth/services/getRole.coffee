@@ -1,4 +1,4 @@
 module.exports =
-  required: ['sessionId']
-  service: (args, done) ->
-    done null, {role: 'Supreme Commander'}
+  required: ['sessionId', 'accountId']
+  service: ({accountId}, done) ->
+    done null, {role: 'Supreme Commander', accountId: accountId}

@@ -6,7 +6,7 @@ module.exports = (name, service) ->
 
       # merge the results of the filter
       final = {}
-      merge final, args
+      merge final, args unless err
       merge final, results
 
       # call the next function in the stack
