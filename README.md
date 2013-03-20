@@ -30,7 +30,7 @@ module.exports =
 
 Here's some example argument types, and their validations.  Law makes these available in the definition of services.  You can think of them as the language that a particular set of services share.  Whenever these names are used in service arguments, their meanings will be enforced by the rules you set here.
 
-### argumentTypes.coffee
+### jargon.coffee
 ```coffee-script
 redisId = /[a-z0-9]{16}/
 mongoId = /[a-f0-9]{24}/
@@ -118,7 +118,7 @@ connect = require 'connect'
 
 # files from the sample app
 serviceLocation = join __dirname, '../sample/app/domain/auth/services'
-argTypes = require '../sample/app/domain/auth/argumentTypes'
+argTypes = require '../sample/app/domain/auth/jargon'
 policy = require '../sample/app/domain/auth/policy'
 
 services = create serviceLocation, argTypes, policy
