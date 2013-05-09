@@ -1,14 +1,24 @@
 # Law
 
-Law was designed to be a low level tool for tying together:
+This project was motivated by the desire to take a lot of validation and error handling logic out of our services, and put it in a declarative layer.
+
+Law is a middleware layer for tying together:
 
 1. A set of services
 2. Argument validations and lookups
 3. An access control policy
 
-Law lets you build services which are framework and transport agnostic. Its focus is on enforcing the business rules specific to your application.  In our applications, we have connected these services to REST, websockets, and a programmatic API through the use of adapters.  I present below an example that should help to tie in as connect middleware.  Hopefully there will be enough information here to make this a useful tool for those interested.  If you're having trouble getting things working, let me know.
+Law is framework and transport agnostic.  Its focus is on enforcing the business rules specific to your application.  In our applications, we have connected these services to REST, websockets, and a programmatic API through the use of adapters.  I present below an example that should help to tie in as connect middleware.  Hopefully there will be enough information here to make this a useful tool for those interested.  If you're having trouble getting things working, let me know.
 
 ![Build Status](https://api.travis-ci.org/TorchlightSoftware/law.png)
+
+## Credit/Inspiration
+
+Our approach to policies was inspired by the filter lifecycle from Ruby on Rails.  The argument validations take some ideas from Design By Contract, e.g. preconditions.  Applying validators to default names was suggested by @JosephJNK.  I am interested to see if this will be conducive to creating a 'ubiquitous language' as described by Eric Evans in Domain Driven Design.
+
+The separation of Express and Connect has influenced our decision to do the same.  I think that while frameworks can lead to gains in terms of productivity, a library has greater potential for re-use.
+
+Many thanks to @wearefractal (@amurray, @contra), @JosephJNK, and @uberscientist for conversations and collaboration on application design with functional and declarative programming.
 
 ## Application Files
 
@@ -165,14 +175,6 @@ Future goals/possibilities:
 2. Standard adapters for websocket RPC, REST
 3. Enforce post-conditions?
 4. Development of a contract-driven web framework.
-
-## Inspiration / Credit
-
-Our approach to policies was inspired by the filter lifecycle from Ruby on Rails.  The argument validations take some ideas from Design By Contract, e.g. preconditions.  Applying validators to default names was suggested by @JosephJNK.  I am interested to see if this will be conducive to creating a 'ubiquitous language' as described by Eric Evans in Domain Driven Design.
-
-The separation of Express and Connect has influenced our decision to do the same.  I think that while frameworks can lead to gains in terms of productivity, a library has greater potential for re-use.
-
-Many thanks to @wearefractal (@amurray, @contra), @JosephJNK, and @uberscientist for conversations and collaboration on application design with functional and declarative programming.
 
 ## The Fine Print
 
