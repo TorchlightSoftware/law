@@ -26,6 +26,8 @@ describe 'dependency', ->
 
   it 'should not fail when the dependency load function is specified', (done) ->
     # specify loader, then...
-    @services.doSomething {@sessionId}, (err) =>
+    @services.doSomething {@sessionId}, (err, {result}) =>
       should.not.exist err
+      should.exist result
+      result.should.equal 'it worked'
       done()
