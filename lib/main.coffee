@@ -24,7 +24,14 @@ module.exports = s =
   # returns {serviceName: wrappedService}
   applyPolicy: require './applyPolicy'
 
+  # looks up and requires dependencies according to
+  # the resolver file.
+  # accepts (services, resolver)
+  # returns {serviceName: wrappedService}
+  applyDependencies: require './applyDependencies'
+
   # prints out the stack of filters applied to each service
   # accepts (services)
   # returns {serviceName: filterStack}
   print: require './printFilters'
+
