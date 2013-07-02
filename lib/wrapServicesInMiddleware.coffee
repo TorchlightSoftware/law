@@ -22,6 +22,7 @@ module.exports = (services, jargon) ->
       # attach meta-data
       wrapper.serviceName = serviceName
       wrapper.callStack = []
+      wrapper.dependencies = serviceDef.dependencies || {}
 
       # expose a function for adding to the stack
       wrapper.prepend = (services) ->
