@@ -14,18 +14,25 @@ applyDependencies = (services, resolver) ->
         dependencies[dependencyType][dependencyName] = resolver[dependencyType] dependencyName
     
     makeWrapper = (serviceName, serviceDef, dependencies) ->
-      wrapper = (args, done) ->
-        serviceDef args, done, dependencies
-      for key in Object.keys serviceDef
-        wrapper[key] = serviceDef[key]
+      # start with a copy of the service up until now
+      wrapper = serviceDef
+
+      # add a handle to our newly-resolved dependencies
       wrapper.dependencies = dependencies
+
+      # grab a reference to the raw service as-defined
       f = wrapper.callStack[wrapper.callStack.length-1]
+      
+      # pseudo-right curry to inject the `dependencies` reference and
+      # ensure the signature is chain-friendly throughout `callStack`
       wrapper.callStack[wrapper.callStack.length-1] = (args, done) ->
         f args, done, wrapper.dependencies
+        
       return wrapper
 
     wrapper = makeWrapper serviceName, serviceDef, dependencies
     wrappedServices[serviceName] = wrapper
+    
   return wrappedServices
 
 module.exports = applyDependencies
