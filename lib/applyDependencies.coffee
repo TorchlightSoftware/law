@@ -1,5 +1,6 @@
 applyDependencies = (services, resolver) ->
   wrappedServices = {}
+  
   for serviceName, serviceDef of services
     dependencies = {}
     
@@ -11,7 +12,16 @@ applyDependencies = (services, resolver) ->
       
       # populate it with resolved service references
       for dependencyName in serviceDef.dependencies[dependencyType]
-        dependencies[dependencyType][dependencyName] = resolver[dependencyType] dependencyName
+
+        unless dependencyType of resolver
+          throw new Error "No resolution for dependencyType `#{dependencyType}`"
+
+        resolved = resolver[dependencyType] dependencyName
+
+        unless resolved?
+          throw new Error "No resolution for dependency `#{dependencyName}` of type `#{dependencyType}`"
+
+        dependencies[dependencyType][dependencyName] = resolved
     
     makeWrapper = (serviceName, serviceDef, dependencies) ->
       # start with a copy of the service up until now

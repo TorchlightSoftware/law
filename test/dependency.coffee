@@ -31,13 +31,6 @@ describe 'dependency', ->
       result.should.equal 'it worked'
       done()
             
-  it 'should fail without a dependency load function wired up', (done) ->
-    @services = applyDependencies @services, @resolver
-    @services.doSomething {@sessionId}, (err) =>
-      should.exist err
-      err.message.should.equal 'Could not load dependency'
-      done()
-
   it 'should not fail when the dependency load function is specified', (done) ->
     @services = applyDependencies @services, @resolver
     should.exist @services.doSomething.dependencies
