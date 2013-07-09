@@ -1,7 +1,7 @@
 {getType} = require './util'
 
 # execute a stack of services (similar to async.waterfall)
-module.exports = (serviceName, input, stack, cb) ->
+module.exports = (serviceName, input, stack, cb, dependencies) ->
 
   # defaults
   serviceName ||= 'Service'
@@ -15,19 +15,20 @@ module.exports = (serviceName, input, stack, cb) ->
     return cb()
 
   # stack iterator
-  callNext = (index, args) ->
+  callNext = (index, args, dependencies) ->
 
     # exit condition
     unless index < stack.length
       return cb null, args
 
     # run next service
-    stack[index] args, (err, results) ->
+    stack[index] args, ((err, results) ->
       results ||= {}
       unless getType(results) is 'Object'
         return cb (new Error "#{stack[index].serviceName or serviceName} must return an object."), {results: results}
       return cb err, results if err
-      callNext index + 1, results
+      callNext index + 1, results, dependencies
+    ), dependencies
 
   # begin execution
-  callNext 0, input
+  callNext 0, input, dependencies

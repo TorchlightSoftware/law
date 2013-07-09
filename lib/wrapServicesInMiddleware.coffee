@@ -14,10 +14,10 @@ module.exports = (services, jargon) ->
       service.serviceName = serviceName
 
       # return wrapped service
-      wrapper = (params, done) ->
+      wrapper = (params, done, dependencies) ->
 
         # execute the call stack
-        chain serviceName, params, wrapper.callStack, done
+        chain serviceName, params, wrapper.callStack, done, dependencies
 
       # attach meta-data
       wrapper.serviceName = serviceName
