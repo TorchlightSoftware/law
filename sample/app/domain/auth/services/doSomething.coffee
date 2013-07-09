@@ -3,4 +3,4 @@ module.exports =
     services: ['helpDoSomething']
   required: []
   service: (args, done, {services}) ->
-    services?.helpDoSomething args, done
+    services.helpDoSomething args, done

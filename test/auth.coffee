@@ -108,7 +108,6 @@ describe "full stack", ->
     it 'should lookup accountId', (done) ->
       @services.getRole {sessionId: 'ab23ab23ab23ab23'}, (err, result) ->
         should.not.exist err
-        console.log result
         should.exist result?.accountId, 'expected result.accountId'
         done()
 
