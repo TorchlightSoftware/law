@@ -15,20 +15,19 @@ module.exports = (serviceName, input, stack, cb, dependencies) ->
     return cb()
 
   # stack iterator
-  callNext = (index, args, dependencies) ->
+  callNext = (index, args) ->
 
     # exit condition
     unless index < stack.length
       return cb null, args
 
     # run next service
-    stack[index] args, ((err, results) ->
+    stack[index] args, (err, results) ->
       results ||= {}
       unless getType(results) is 'Object'
         return cb (new Error "#{stack[index].serviceName or serviceName} must return an object."), {results: results}
       return cb err, results if err
-      callNext index + 1, results, dependencies
-    ), dependencies
+      callNext index + 1, results
 
   # begin execution
-  callNext 0, input, dependencies
+  callNext 0, input
