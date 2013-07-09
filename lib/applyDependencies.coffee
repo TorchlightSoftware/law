@@ -1,20 +1,24 @@
-applyDependencies = (services, resolver) ->
-  wrappedServices = {}
+# monkey patch the service definitions to insert dependencies
+# this has to happen after all services have been loaded, in order
+# to satisfy inter-service dependencies
+module.exports = (services, resolver) ->
 
+  # NOTE: serviceName, serviceDef, and dependencies are prepared,
+  # and captured later in a closure
   for serviceName, serviceDef of services
-    dependencies = {}
+    dependencies = {} # dependencies root
 
-    # we will create keys for any declared dependency types
-    # and have them map to resolved dependencies
-    for dependencyType of serviceDef.dependencies
+    # resolve dependencies for all services and store them in a root object
+    for dependencyType, dependencyNames of serviceDef.dependencies
+
+      unless resolver[dependencyType]?
+        throw new Error "No resolution for dependencyType '#{dependencyType}'."
+
       # initialize sub-object for this dependencyType
       dependencies[dependencyType] = {}
 
       # populate it with resolved service references
-      for dependencyName in serviceDef.dependencies[dependencyType]
-
-        unless dependencyType of resolver
-          throw new Error "No resolution for dependencyType '#{dependencyType}'."
+      for dependencyName in dependencyNames
 
         resolved = resolver[dependencyType] dependencyName
 
@@ -23,26 +27,21 @@ applyDependencies = (services, resolver) ->
 
         dependencies[dependencyType][dependencyName] = resolved
 
-    makeWrapper = (serviceName, serviceDef, dependencies) ->
-      # start with a copy of the service up until now
-      wrapper = serviceDef
+
+    # capture dependencies in a closure
+    do (serviceName, serviceDef, dependencies) ->
 
       # add a handle to our newly-resolved dependencies
-      wrapper.dependencies = dependencies
+      serviceDef.dependencies = dependencies
+      baseServiceIndex = serviceDef.callStack.length-1
 
       # grab a reference to the raw service as-defined
-      f = wrapper.callStack[wrapper.callStack.length-1]
+      f = serviceDef.callStack[baseServiceIndex]
 
-      # pseudo-right curry to inject the `dependencies` reference and
-      # ensure the signature is chain-friendly throughout `callStack`
-      wrapper.callStack[wrapper.callStack.length-1] = (args, done) ->
-        f args, done, wrapper.dependencies
+      # inject the dependencies into the base service,
+      # while leaving the rest of the callStack untouched
+      serviceDef.callStack[baseServiceIndex] = (args, done) ->
+        f args, done, serviceDef.dependencies
 
-      return wrapper
-
-    wrapper = makeWrapper serviceName, serviceDef, dependencies
-    wrappedServices[serviceName] = wrapper
-
-  return wrappedServices
-
-module.exports = applyDependencies
+  # services have been modified internally
+  return services
