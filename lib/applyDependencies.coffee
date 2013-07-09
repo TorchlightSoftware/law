@@ -19,10 +19,12 @@ applyDependencies = (services, resolver) ->
       for key in Object.keys serviceDef
         wrapper[key] = serviceDef[key]
       wrapper.dependencies = dependencies
+      f = wrapper.callStack[wrapper.callStack.length-1]
+      wrapper.callStack[wrapper.callStack.length-1] = (args, done) ->
+        f args, done, wrapper.dependencies
       return wrapper
 
     wrapper = makeWrapper serviceName, serviceDef, dependencies
-    # wrapper = (args, done) -> services[serviceName] args, done, dependencies
     wrappedServices[serviceName] = wrapper
   return wrappedServices
 

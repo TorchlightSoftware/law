@@ -2,7 +2,5 @@ module.exports =
   dependencies:
     services: ['helpDoSomething']
   required: []
-  service: (args, done, deps) ->
-    console.log '[doSomething]', {deps}
-    {services} = deps
+  service: (args, done, {services}) ->
     services?.helpDoSomething args, done

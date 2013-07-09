@@ -15,7 +15,6 @@ describe 'dependency', ->
     @services = create serviceLocation, jargon, policy
     @resolver =
       services: (serviceName) =>
-        console.log "resolving service: #{serviceName}"
         return @services[serviceName]
     
     @sessionId = 'ab23ab23ab23ab23'
@@ -26,12 +25,14 @@ describe 'dependency', ->
 
   it 'should not fail on a service with no dependencies', (done) ->
     @services = applyDependencies @services, @resolver
-    @services.helpDoSomething {@sessionId}, (err) =>
+    @services.helpDoSomething {@sessionId}, (err, {result}) =>
       should.not.exist err
+      should.exist result
+      result.should.equal 'it worked'
       done()
             
   it 'should fail without a dependency load function wired up', (done) ->
-    # @services = applyDependencies @services, @resolver
+    @services = applyDependencies @services, @resolver
     @services.doSomething {@sessionId}, (err) =>
       should.exist err
       err.message.should.equal 'Could not load dependency'
@@ -42,9 +43,8 @@ describe 'dependency', ->
     should.exist @services.doSomething.dependencies
     should.exist @services.doSomething.dependencies.services
     
-    @services.doSomething {@sessionId}, ((err, {result}) =>
+    @services.doSomething {@sessionId}, (err, {result}) =>
       should.not.exist err
       should.exist result
       result.should.equal 'it worked'
       done()
-    ), @services.doSomething.dependencies
