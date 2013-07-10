@@ -26,6 +26,32 @@ badServices =
     service: (args, next, {}) ->
       next()
 
+orthogonalDependers =
+  doThis:
+    dependencies:
+      services: ['helpDoThis']
+    required: []
+    service: (args, next, {services}) ->
+      should.exist services.helpDoThis
+      should.not.exist services.helpDoThat
+      services.helpDoThis args, next
+  helpDoThis:
+    required: []
+    service: (args, next, {}) ->
+      next()
+  doThat:
+    dependencies:
+      services: ['helpDoThat']
+    required: []
+    service: (args, next, {services}) ->
+      should.not.exist services.helpDoThis
+      should.exist services.helpDoThat
+      services.helpDoThat args, next
+  helpDoThat:
+    required: []
+    service: (args, next, {}) ->
+      next()
+
 describe 'applyDependencies', ->
   beforeEach (done) ->
     # replicate use of non-dependency create helper
@@ -96,3 +122,19 @@ describe 'applyDependencies', ->
       should.exist err
       err.message.should.equal "No resolution for dependencyType 'badDependencyType'."
       done()
+
+  it 'should only inject dependencies into their dependent services', (done) ->
+    for k, v of orthogonalDependers
+      @services[k] = v
+    @services = process @services, jargon
+    @services = applyPolicy @services, policy
+    @services = applyDependencies @services, @resolver
+
+    for k, v of orthogonalDependers
+      should.exist @services[k]
+
+    @services.doThis {@sessionId}, (err) =>
+      should.not.exist err
+      @services.doThat {@sessionId}, (err) =>
+        should.not.exist err
+        done()
