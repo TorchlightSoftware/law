@@ -1,7 +1,7 @@
 # monkey patch the service definitions to insert dependencies
 # this has to happen after all services have been loaded, in order
 # to satisfy inter-service dependencies
-module.exports = (services, resolver) ->
+module.exports = (services, resolvers) ->
 
   # NOTE: serviceName, serviceDef, and dependencies are prepared,
   # and captured later in a closure
@@ -11,7 +11,7 @@ module.exports = (services, resolver) ->
     # resolve dependencies for all services and store them in a root object
     for dependencyType, dependencyNames of serviceDef.dependencies
 
-      unless resolver[dependencyType]?
+      unless resolvers[dependencyType]?
         throw new Error "No resolution for dependencyType '#{dependencyType}'."
 
       # initialize sub-object for this dependencyType
@@ -20,7 +20,7 @@ module.exports = (services, resolver) ->
       # populate it with resolved service references
       for dependencyName in dependencyNames
 
-        resolved = resolver[dependencyType] dependencyName
+        resolved = resolvers[dependencyType] dependencyName
 
         unless resolved?
           throw new Error "No resolution for dependency '#{dependencyName}' of type '#{dependencyType}'."
