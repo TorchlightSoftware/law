@@ -1,5 +1,7 @@
 # Law
 
+Less strictly constitutional and more strictly awesome.
+
 This project was motivated by the desire to take a lot of validation and error handling logic out of our services, and put it in a declarative layer.
 
 Law is a middleware layer for tying together:
