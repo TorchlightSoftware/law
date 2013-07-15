@@ -40,3 +40,18 @@ describe 'dependency', ->
       should.exist result
       result.should.equal 'it worked'
       done()
+
+  it "should accept the resolvers data structure in 'create'", (done) ->
+    @services = create serviceLocation, jargon, policy, @resolver
+    @services.doSomething {@sessionId}, (err) ->
+      should.not.exist err
+      done()
+
+  it 'should allow usage of a parameterized resolvers file', (done) ->
+    @services = create serviceLocation, jargon, policy
+    makeResolvers = require '../sample/app/domain/auth/resolvers'
+    resolvers = makeResolvers @services
+    @services = applyDependencies @services, resolvers
+    @services.doSomething {@sessionId}, (err) ->
+      should.not.exist err
+      done()

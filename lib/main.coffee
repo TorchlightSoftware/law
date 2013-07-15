@@ -2,10 +2,16 @@ module.exports = s =
 
   # Convenience method: load from file system and wrap in middleware
   # returns {serviceName: serviceDef}
-  create: (location, jargon=[], policy=[]) ->
+  create: (location, jargon=[], policy=[], resolvers) ->
     defs = s.load location
     services = s.process defs, jargon
-    final = s.applyPolicy services, policy
+    withPolicy = s.applyPolicy services, policy
+
+    if resolvers?
+      r = resolvers
+      final = s.applyDependencies withPolicy, resolvers
+    else
+      final = withPolicy
 
     return final
 
@@ -25,7 +31,7 @@ module.exports = s =
   applyPolicy: require './applyPolicy'
 
   # looks up and requires dependencies according to
-  # the resolvers file.
+  # the resolvers data structure.
   # accepts (services, resolvers)
   # returns {serviceName: wrappedService}
   applyDependencies: require './applyDependencies'
