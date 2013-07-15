@@ -34,3 +34,9 @@ module.exports = s =
   # accepts (services)
   # returns {serviceName: filterStack}
   print: require './printFilters'
+
+  # exposes the 'graph' submodule, which includes functions to
+  # take a set of services and return information about the graphs
+  # graphs induced by the various dependency types, especially
+  # the 'services' dependencyType.
+  graph: require './graph'
