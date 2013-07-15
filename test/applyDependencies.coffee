@@ -138,3 +138,12 @@ describe 'applyDependencies', ->
       @services.doThat {@sessionId}, (err) =>
         should.not.exist err
         done()
+
+  it 'should work when the service has no metadata', (done) ->
+    @services.bare = (args, done) -> done()
+    @services = process @services, jargon
+    @services = applyPolicy @services, policy
+    @services = applyDependencies @services, @resolver
+    @services.bare {@sessionId}, (err) ->
+      should.not.exist err
+      done()
