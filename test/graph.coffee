@@ -43,6 +43,15 @@ expectedResults =
     s6: ['s1', 's2', 's3', 's4', 's5', 's6']
     s7: ['s7']
 
+expectedAdjacencyArray = [
+  ['s1', 's2']
+  ['s1', 's6']
+  ['s2', 's3']
+  ['s3', 's4']
+  ['s3', 's5']
+  ['s6', 's1']
+]
+
 describe 'graph', ->
   before (done) ->
     should.exist graph
@@ -73,6 +82,23 @@ describe 'graph', ->
       should.exist adj
       adj.should.be.empty
       done()
+
+  describe 'graph.adjacencyRelation', ->
+    before (done) ->
+      should.exist graph.adjacencyRelation
+      done()
+
+    it 'should return an adjacency array of services via default argument', (done) ->
+      adj = graph.adjacencyRelation services
+      should.exist adj
+      adj.should.eql expectedAdjacencyArray
+      done()
+      
+    it 'should return an adjacency array of services when told to', (done) ->
+      adj = graph.adjacencyRelation services, 'services'
+      should.exist adj
+      adj.should.eql expectedAdjacencyArray
+      done()      
 
   describe 'graph.connectedDependencies', ->
     before (done) ->

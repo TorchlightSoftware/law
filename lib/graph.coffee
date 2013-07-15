@@ -1,6 +1,15 @@
 adjacentDependencies = (services, source, dependencyType='services') ->
   services[source]?.dependencies?[dependencyType] || []
 
+# Give an adjacency array representation of the dependency digraph
+adjacencyRelation = (services, dependencyType) ->
+  rel = []
+  for name of services
+    adjacent = adjacentDependencies services, name, dependencyType
+    for dependency in adjacent
+      rel.push [name, dependency]
+  return rel
+
 flatten = (x, y) -> x.concat y
 
 dedup = (arr) ->
@@ -41,4 +50,5 @@ allConnectedServices = (services) ->
 
 module.exports =
   adjacentDependencies: adjacentDependencies
+  adjacencyRelation: adjacencyRelation
   connectedDependencies: connectedDependencies
