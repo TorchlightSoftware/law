@@ -52,6 +52,16 @@ expectedAdjacencyArray = [
   ['s6', 's1']
 ]
 
+expectedDot = """
+digraph Services {
+  s1 -> s2;
+  s1 -> s6;
+  s2 -> s3;
+  s3 -> s4;
+  s3 -> s5;
+  s6 -> s1;
+}"""
+
 describe 'graph', ->
   before (done) ->
     should.exist graph
@@ -116,4 +126,21 @@ describe 'graph', ->
         for name, def of services
           connected = graph.connectedDependencies services, name, dependencyType
           connected.should.eql expectedResults[dependencyType][name]
+      done()
+
+  describe 'graph.dotNotation', ->
+    before (done) ->
+      should.exist graph.dotNotation
+      done()
+
+    it 'should return a string representation in dot notation by default', (done) ->
+      dot = graph.dotNotation services, 'Services'
+      dot.should.eql expectedDot
+      done()
+
+    it 'should return a string representation in dot notation when told to', (done) ->
+      for dependencyType of expectedResults
+        for name, def of services
+          dot = graph.dotNotation services, 'Services', dependencyType
+          dot.should.eql expectedDot
       done()

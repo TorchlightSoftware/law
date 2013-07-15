@@ -46,9 +46,21 @@ allConnectedServices = (services) ->
   for name of services
     connectionMap[name] = connectedServices services, name
   return connectionMap
-    
+
+join = (arr, sep) -> arr.reduce (s, t) -> "#{s}#{sep}#{t}"
+
+dotNotation = (services, graphName, dependencyType) ->
+  rel = adjacencyRelation services, dependencyType
+  rel = ("#{x} -> #{y};" for [x,y] in rel)
+  rel = join rel, '\n  '
+  dot = """
+  digraph #{graphName} {
+    #{rel}
+  }"""
+  return dot
 
 module.exports =
   adjacentDependencies: adjacentDependencies
   adjacencyRelation: adjacencyRelation
   connectedDependencies: connectedDependencies
+  dotNotation: dotNotation
