@@ -27,23 +27,27 @@ describe 'dependency', ->
       result.should.equal 'it worked'
       done()
 
-  it 'should not fail when the dependency load function is specified', (done) ->
+  it 'should reference a service', (done) ->
     @services.doSomething {@sessionId}, (err, {result}) =>
       should.not.exist err
       should.exist result
       result.should.equal 'it worked'
       done()
 
-  it "should accept the resolvers data structure in 'create'", (done) ->
-    defs = load serviceLocation
-    @services = create defs, jargon, policy, @resolver
-    @services.doSomething {@sessionId}, (err) ->
+  it 'should reference a lib', (done) ->
+    @services.useLib {@sessionId}, (err, {compiled}) ->
       should.not.exist err
+      should.exist compiled
+
+      compiled.should.eql '\nconsole.log("hello");\n'
       done()
 
-  it 'should allow usage of a parameterized resolvers file', (done) ->
-    defs = load serviceLocation
-    @services = create defs, jargon, policy
-    @services.doSomething {@sessionId}, (err) ->
-      should.not.exist err
-      done()
+  #it "should accept the resolvers data structure in 'create'", (done) ->
+    #@services.doSomething {@sessionId}, (err) ->
+      #should.not.exist err
+      #done()
+
+  #it 'should allow usage of a parameterized resolvers file', (done) ->
+    #@services.doSomething {@sessionId}, (err) ->
+      #should.not.exist err
+      #done()
