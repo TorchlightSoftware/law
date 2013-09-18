@@ -5,30 +5,19 @@ should = require 'should'
   FailedArgumentLookupError
   MissingArgumentError
   InvalidArgumentError
-} = require '../lib/errors'
+} = errors = require '../lib/errors'
 
 
-describe 'errors', ->
-  describe 'LawError', ->
-    beforeEach (done) ->
-      @err = new LawError()
-      done()
+describe 'LawError inheritance and defaults', ->
+  for ErrName, Err of errors
+    do (ErrName, Err) ->
+      describe "Inheritance of #{ErrName}", ->
 
-    it 'should be an instance of Error', (done) ->
-      (@err instanceof Error).should.be.true
-      done()
+        beforeEach (done) ->
+          @err = new Err()
+          should.exist @err
+          done()
 
-    it 'should be an instance of LawError', (done) ->
-      (@err instanceof LawError).should.be.true
-      done()
-
-  describe 'FailedArgumentLookupError', ->
-    describe 'an instance without any passed arguments', ->
-      beforeEach (done) ->
-        @err = new FailedArgumentLookupError()
-        done()
-
-      describe 'inheriting from LawError', ->
         it 'should be an instance of Error', (done) ->
           (@err instanceof Error).should.be.true
           done()
@@ -37,8 +26,8 @@ describe 'errors', ->
           (@err instanceof LawError).should.be.true
           done()
 
-        it 'should be an instance of FailedArgumentLookupError', (done) ->
-          (@err instanceof FailedArgumentLookupError).should.be.true
+        it "should be an instance of its own class (#{ErrName})", (done) ->
+          (@err instanceof Err).should.be.true
           done()
 
         it 'should inherit Error, tea-error properties', (done) ->
@@ -47,65 +36,65 @@ describe 'errors', ->
           should.exist @err.stack
           done()
 
-      it 'should have a reasonable default message', (done) ->
-        expectedMessage = 'Unspecified LawError/FailedArgumentLookup'
-        @err.message.should.equal expectedMessage
-        done()
+      describe "An instance of #{ErrName} without any passed arguments", ->
+        beforeEach (done) ->
+          @err = new Err()
+          should.exist @err
+          done()
 
-    describe 'an instance with passed arguments', ->
-      beforeEach (done) ->
-        @message = 'Could not look up required argument `username`'
-        @properties =
-          serviceName: 'doSomething'
-          args:
-            sessionId: 'deadbeef'
-            timestamp: Date.now()
-        @err = new FailedArgumentLookupError @message, @properties
-        done()
+        it 'should have a reasonable default message', (done) ->
+          expectedMessage = "Unspecified #{@err.name}"
+          @err.message.should.equal expectedMessage
+          done()
 
-      it 'should have a correct, descriptive message', (done) ->
-        should.exist @err.message
-        @err.message.should.equal @message
-        done()
+describe 'FailedArgumentLookupError', ->
 
-      it 'should have the properties we gave it', (done) ->
-        @err.should.include @properties
-        done()
-
-  describe 'MissingArgumentError', ->
+  describe 'an instance with passed arguments', ->
     beforeEach (done) ->
-      @message = 'Missing required argument `username`'
+      @message = 'Could not look up required argument `username`'
       @properties =
         serviceName: 'doSomething'
         args:
           sessionId: 'deadbeef'
           timestamp: Date.now()
-      @err = new MissingArgumentError @message, @properties
-      done()
-
-    it 'should be an instance of MissingArgumentError', (done) ->
-      (@err instanceof MissingArgumentError).should.be.true
+      @err = new FailedArgumentLookupError @message, @properties
       done()
 
     it 'should have a correct, descriptive message', (done) ->
+      should.exist @err.message
       @err.message.should.equal @message
       done()
 
-  describe 'InvalidArgumentError', ->
-    beforeEach (done) ->
-      @message = 'Invalid argument `sessionId`'
-      @properties =
-        serviceName: 'doSomething'
-        args:
-          sessionId: 'malformed'
-          timestamp: Date.now()
-      @err = new InvalidArgumentError @message, @properties
+    it 'should have the properties we gave it', (done) ->
+      @err.should.include @properties
       done()
 
-    it 'should be an instance of InvalidArgumentError', (done) ->
-      (@err instanceof InvalidArgumentError).should.be.true
-      done()
+describe 'MissingArgumentError', ->
+  beforeEach (done) ->
+    @message = 'Missing required argument `username`'
+    @properties =
+      serviceName: 'doSomething'
+      args:
+        sessionId: 'deadbeef'
+        timestamp: Date.now()
+    @err = new MissingArgumentError @message, @properties
+    done()
 
-    it 'should have a correct, descriptive message', (done) ->
-      @err.message.should.equal @message
-      done()
+  it 'should have a correct, descriptive message', (done) ->
+    @err.message.should.equal @message
+    done()
+
+describe 'InvalidArgumentError', ->
+  beforeEach (done) ->
+    @message = 'Invalid argument `sessionId`'
+    @properties =
+      serviceName: 'doSomething'
+      args:
+        sessionId: 'malformed'
+        timestamp: Date.now()
+    @err = new InvalidArgumentError @message, @properties
+    done()
+
+  it 'should have a correct, descriptive message', (done) ->
+    @err.message.should.equal @message
+    done()
