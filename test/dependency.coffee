@@ -39,7 +39,8 @@ describe 'dependency', ->
       should.not.exist err
       should.exist compiled
 
-      compiled.should.eql '\nconsole.log("hello");\n'
+      compiled = compiled.replace /\n/g, ''
+      compiled.should.eql 'console.log("hello");'
       done()
 
   #it "should accept the resolvers data structure in 'create'", (done) ->
