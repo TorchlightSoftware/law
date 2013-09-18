@@ -107,7 +107,7 @@ describe 'applyDependencies', ->
       @services = applyDependencies @services, @resolver
     catch err
       should.exist err
-      err.message.should.equal "No resolution for dependency 'nonexistentService' of type 'services'."
+      err.message.should.equal "Loading 'beUnsatisfied': No resolution for dependency 'nonexistentService' of type 'services'."
       done()
 
   it 'should fail with an error when a dependencyType is not resolvable', (done) ->
@@ -120,7 +120,7 @@ describe 'applyDependencies', ->
       @services = applyDependencies @services, @resolver
     catch err
       should.exist err
-      err.message.should.equal "No resolution for dependencyType 'badDependencyType'."
+      err.message.should.equal "Loading 'haveBadDependencyType': No resolution for dependencyType 'badDependencyType'."
       done()
 
   it 'should only inject dependencies into their dependent services', (done) ->

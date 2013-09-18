@@ -1,7 +1,13 @@
-# monkey patch the service definitions to insert dependencies
+{merge} = require './util'
+coreResolvers = require './coreResolvers'
+
+# extend the service calls to insert dependencies
 # this has to happen after all services have been loaded, in order
 # to satisfy inter-service dependencies
-module.exports = (services, resolvers) ->
+module.exports = (services, providedResolvers) ->
+  resolvers = {}
+  merge resolvers, coreResolvers(services)
+  merge resolvers, providedResolvers
 
   # NOTE: serviceName, serviceDef, and dependencies are prepared,
   # and captured later in a closure
@@ -12,7 +18,7 @@ module.exports = (services, resolvers) ->
     for dependencyType, dependencyNames of serviceDef.dependencies
 
       unless resolvers[dependencyType]?
-        throw new Error "No resolution for dependencyType '#{dependencyType}'."
+        throw new Error "Loading '#{serviceName}': No resolution for dependencyType '#{dependencyType}'."
 
       # initialize sub-object for this dependencyType
       dependencies[dependencyType] = {}
@@ -23,10 +29,9 @@ module.exports = (services, resolvers) ->
         resolved = resolvers[dependencyType] dependencyName
 
         unless resolved?
-          throw new Error "No resolution for dependency '#{dependencyName}' of type '#{dependencyType}'."
+          throw new Error "Loading '#{serviceName}': No resolution for dependency '#{dependencyName}' of type '#{dependencyType}'."
 
         dependencies[dependencyType][dependencyName] = resolved
-
 
     # capture dependencies in a closure
     do (serviceName, serviceDef, dependencies) ->
