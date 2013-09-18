@@ -1,21 +1,16 @@
 module.exports = s =
 
-  # Convenience method: load from file system and wrap in middleware
-  # returns {serviceName: serviceDef}
-  create: (location, jargon=[], policy=[], resolvers) ->
-    defs = s.load location
+  # Convenience method: wrap services in complete middleware stack
+  # accepts {serviceName: serviceDef}
+  # returns {serviceName: serviceDef} (wrapped)
+  create: (defs, jargon=[], policy=[], resolvers={}) ->
     services = s.process defs, jargon
     withPolicy = s.applyPolicy services, policy
-
-    if resolvers?
-      r = resolvers
-      final = s.applyDependencies withPolicy, resolvers
-    else
-      final = withPolicy
+    final = s.applyDependencies withPolicy, resolvers
 
     return final
 
-  # loads services from the file system
+  # loads services from the file system (assumed to be in separate files)
   # accepts (serviceLocation)
   # returns {serviceName: serviceDef}
   load: require './getServices'
