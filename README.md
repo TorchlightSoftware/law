@@ -88,6 +88,38 @@ module.exports =
     ]
 ```
 
+## Dependencies
+
+Since version 0.1.1 Law supports declarative dependency injection.  The two built in loaders are:
+
+* services: call sibling services
+* lib: a shortcut to require
+
+This lets us do static analysis of dependencies, and can be used as a way of making side effects explicit.
+
+```coffee-script
+module.exports =
+  required: ['sessionId']
+  dependencies:
+    services: ['aHelperService']
+    lib: ['lodash']
+
+  service: (args, done, {services, require}) ->
+    args = lib.lodash.merge {myOpt: 1}, args
+    services.aHelperService args, done
+```
+
+To add more loaders, just plug in a resolvers object when you load your services:
+
+```coffee-script
+resolvers = {
+  myLoader: (name) -> loadIt(name)
+}
+
+law.create services, jargon, policy, resolvers
+```
+
+
 ## Value
 
 Through this approach we accomplish the following:
