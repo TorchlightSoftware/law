@@ -1,5 +1,10 @@
 {getType, addTo, compact, flatten, merge} = require './util'
 generateFilter = require './generateFilter'
+{
+  FailedArgumentLookupError
+  MissingArgumentError
+  InvalidArgumentError
+} = require './errors'
 
 # generate validations that will be added to the filter stack
 generateValidations = (serviceName, name, types, required) ->
@@ -38,8 +43,7 @@ generateValidations = (serviceName, name, types, required) ->
         serviceName: serviceName
         args: args
 
-      error = new Error "#{serviceName} requires '#{name}' to be defined."
-      return next error, context
+      return next (new MissingArgumentError context)
 
     else
       return next()

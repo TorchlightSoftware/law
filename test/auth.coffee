@@ -57,7 +57,7 @@ describe "auth", ->
         should.exist err?.message, 'expected error'
         err.message.should.eql "filters/isLoggedIn requires 'sessionId' to be defined."
         for field in ['reason', 'fieldName', 'serviceName']
-          Object.keys(result).should.include field
+          Object.keys(err).should.include field
         done()
 
     it 'should require results to be an object', (done) ->

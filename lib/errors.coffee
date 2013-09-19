@@ -25,10 +25,11 @@ class FailedArgumentLookupError extends LawError
 class MissingArgumentError extends LawError
   name: 'LawError/MissingArgument'
 
-  constructor: (message, properties, start) ->
-    message = message or "Unspecified #{@name}"
+  constructor: (context, start) ->
+    {serviceName, fieldName} = context
+    message = "#{serviceName} requires '#{fieldName}' to be defined."
 
-    super message, properties, start
+    super message, context, start
 
 
 class InvalidArgumentError extends LawError
