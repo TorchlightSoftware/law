@@ -15,10 +15,12 @@ describe 'LawError inheritance and defaults', ->
 
         beforeEach (done) ->
           @err = new Err()
+          console.log {@err}
           should.exist @err
           done()
 
         it 'should be an instance of Error', (done) ->
+          console.log 'typeof @err', typeof @err
           (@err instanceof Error).should.be.true
           done()
 

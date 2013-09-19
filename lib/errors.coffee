@@ -16,28 +16,28 @@ LawError = error 'LawError'
 class FailedArgumentLookupError extends LawError
   name: 'LawError/FailedArgumentLookup'
 
-  constructor: (message, properties, callee) ->
+  constructor: (message, properties, start) ->
     message = message or "Unspecified #{@name}"
 
-    super message, properties, callee
+    super message, properties, start
 
 
 class MissingArgumentError extends LawError
   name: 'LawError/MissingArgument'
 
-  constructor: (message, properties, callee) ->
+  constructor: (message, properties, start) ->
     message = message or "Unspecified #{@name}"
 
-    super message, properties, callee
+    super message, properties, start
 
 
 class InvalidArgumentError extends LawError
   name: 'LawError/InvalidArgument'
 
-  constructor: (message, properties, callee) ->
+  constructor: (message, properties, start) ->
     message = message or "Unspecified #{@name}"
 
-    super message, properties, callee
+    super message, properties, start
 
 
 module.exports = {
