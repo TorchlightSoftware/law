@@ -71,7 +71,7 @@ describe "auth", ->
         @services.getRole {}, (err, result) ->
           should.exist err?.message, 'expected error'
           err.message.should.eql "getRole requires 'sessionId' to be defined."
-          result.should.eql
+          err.should.include
             reason: 'requiredField'
             fieldName: 'sessionId'
             serviceName: 'getRole'
