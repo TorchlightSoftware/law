@@ -1,6 +1,6 @@
 {getType} = require './util'
 createServiceFilters = require './createServiceFilters'
-{FailedArgumentLookupError} = require './errors'
+{ServiceReturnTypeError} = require './errors'
 
 module.exports = (serviceName, serviceDef, jargon) ->
   generateDefaultValidations = createServiceFilters jargon
@@ -23,4 +23,4 @@ module.exports = (serviceName, serviceDef, jargon) ->
       return validations
 
     else
-      throw (new FailedArgumentLookupError {serviceName})
+      throw (new ServiceReturnTypeError {serviceName})

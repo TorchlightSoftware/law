@@ -75,6 +75,16 @@ class ServiceDefinitionSignatureError extends LawError
     super message, context, start
 
 
+class ServiceDefinitionTypeError extends LawError
+  name: 'LawError/ServiceDefinitionType'
+
+  constructor: (context, start) ->
+    {serviceName} = context
+    message = "Service '#{serviceName}' is not an object or a function."
+
+    super message, context, start
+
+
 class ServiceReturnTypeError extends LawError
   name: 'LawError/ServiceReturnType'
 
@@ -112,8 +122,9 @@ module.exports = {
   InvalidServiceNameError
   MissingArgumentError
   NoFilterArrayError
-  ServiceDefinitionSignatureError
   ServiceDefinitionNoCallableError
+  ServiceDefinitionSignatureError
+  ServiceDefinitionTypeError
   ServiceReturnTypeError
   UnresolvableDependencyError
   UnresolvableDependencyTypeError

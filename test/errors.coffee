@@ -9,6 +9,7 @@ should = require 'should'
   NoFilterArrayError
   ServiceDefinitionNoCallableError
   ServiceDefinitionSignatureError
+  ServiceDefinitionTypeError
   ServiceReturnTypeError
   UnresolvableDependencyError
   UnresolvableDependencyTypeError
@@ -25,11 +26,11 @@ defaultContext =
 
 
 testData = [
-  {
-    errorType: FailedArgumentLookupError
-    expected:
-      message: "Service 'doSomething' is not an object or a function."
-  }
+  # {
+  #   errorType: FailedArgumentLookupError
+  #   expected:
+  #     message: "Service 'doSomething' is not an object or a function."
+  # }
   {
     errorType: InvalidArgumentError
     expected:
@@ -59,6 +60,11 @@ testData = [
     errorType: ServiceDefinitionSignatureError
     expected:
       message: "'doSomething' requires an arguments object as the first argument."
+  }
+  {
+    errorType: ServiceDefinitionTypeError
+    expected:
+      message: "Service 'doSomething' is not an object or a function."
   }
   {
     errorType: ServiceReturnTypeError
