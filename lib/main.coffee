@@ -41,3 +41,6 @@ module.exports = s =
   # graphs induced by the various dependency types, especially
   # the 'services' dependencyType.
   graph: require './graph'
+
+  # Export LawError base type for extensions to depend upon.
+  LawError: require('./errors').LawError
