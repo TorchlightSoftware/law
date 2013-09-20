@@ -34,7 +34,7 @@ module.exports = (serviceName, input, stack, cb, dependencies) ->
           serviceName: stack[index].serviceName or serviceName
           results: results
         return cb (new ServiceReturnTypeError context)
-        # return cb (new Error "#{stack[index].serviceName or serviceName} must return an object."), {results: results}
+
       return cb err, results if err
       callNext index + 1, results
 
