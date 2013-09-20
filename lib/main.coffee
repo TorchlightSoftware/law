@@ -43,4 +43,4 @@ module.exports = s =
   graph: require './graph'
 
   # Export 'errors' module for extensions to depend upon.
-  errors: = require './errors'
+  errors: require './errors'
