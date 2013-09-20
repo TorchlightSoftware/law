@@ -3,100 +3,108 @@ should = require 'should'
 {
   LawError
   FailedArgumentLookupError
-  MissingArgumentError
   InvalidArgumentError
+  InvalidServiceNameError
+  MissingArgumentError
+  NoFilterArrayError
+  ServiceDefinitionNoCallableError
+  ServiceDefinitionSignatureError
+  ServiceReturnTypeError
+  UnresolvableDependencyError
+  UnresolvableDependencyTypeError
 } = errors = require '../lib/errors'
 
 
-describe 'LawError inheritance and defaults', ->
-  for ErrName, Err of errors
-    do (ErrName, Err) ->
-      describe "Inheritance of #{ErrName}", ->
+defaultContext =
+  serviceName: 'doSomething'
+  fieldName: 'sessionId'
+  requiredType: 'SessionId'
+  args:
+    sessionId: 'malformed'
+    timestamp: Date.now()
 
-        beforeEach (done) ->
-          @err = new Err()
-          console.log {@err}
-          should.exist @err
-          done()
 
-        it 'should be an instance of Error', (done) ->
-          console.log 'typeof @err', typeof @err
-          (@err instanceof Error).should.be.true
-          done()
-
-        it 'should be an instance of LawError', (done) ->
-          (@err instanceof LawError).should.be.true
-          done()
-
-        it "should be an instance of its own class (#{ErrName})", (done) ->
-          (@err instanceof Err).should.be.true
-          done()
-
-        it 'should inherit Error, tea-error properties', (done) ->
-          should.exist @err.toJSON
-          should.exist @err.message
-          should.exist @err.stack
-          done()
-
-      describe "An instance of #{ErrName} without any passed arguments", ->
-        beforeEach (done) ->
-          @err = new Err()
-          should.exist @err
-          done()
-
-        it 'should have a reasonable default message', (done) ->
-          expectedMessage = "Unspecified #{@err.name}"
-          @err.message.should.equal expectedMessage
-          done()
-
-describe 'FailedArgumentLookupError', ->
-
-  describe 'an instance with passed arguments', ->
-    beforeEach (done) ->
-      @message = 'Could not look up required argument `username`'
-      @properties =
-        serviceName: 'doSomething'
-        args:
-          sessionId: 'deadbeef'
-          timestamp: Date.now()
-      @err = new FailedArgumentLookupError @message, @properties
-      done()
-
-    it 'should have a correct, descriptive message', (done) ->
-      should.exist @err.message
-      @err.message.should.equal @message
-      done()
-
-    it 'should have the properties we gave it', (done) ->
-      @err.should.include @properties
-      done()
-
-describe 'MissingArgumentError', ->
-  beforeEach (done) ->
-    @message = 'Missing required argument `username`'
-    @properties =
+testData = [
+  {
+    errorType: FailedArgumentLookupError
+    expected:
+      message: "Service 'doSomething' is not an object or a function."
+  }
+  {
+    errorType: InvalidArgumentError
+    expected:
+      message: "'doSomething' requires 'sessionId' to be a valid 'SessionId'."
+  }
+  {
+    errorType: InvalidServiceNameError
+    expected:
+      message: "Error loading policy: 'doSomething' is not a valid service name."
+  }
+  {
+    errorType: MissingArgumentError
+    expected:
+      message: "'doSomething' requires 'sessionId' to be defined."
+  }
+  {
+    errorType: NoFilterArrayError
+    expected:
+      message: "Error loading policy: Validations must contain array of filters."
+  }
+  {
+    errorType: ServiceDefinitionNoCallableError
+    expected:
+      message: "Could not find function definition for service 'doSomething'."
+  }
+  {
+    errorType: ServiceDefinitionSignatureError
+    expected:
+      message: "'doSomething' requires an arguments object as the first argument."
+  }
+  {
+    errorType: ServiceReturnTypeError
+    expected:
+      message: "'doSomething' must return an object."
+  }
+  {
+    errorType: UnresolvableDependencyError
+    context:
       serviceName: 'doSomething'
-      args:
-        sessionId: 'deadbeef'
-        timestamp: Date.now()
-    @err = new MissingArgumentError @message, @properties
-    done()
-
-  it 'should have a correct, descriptive message', (done) ->
-    @err.message.should.equal @message
-    done()
-
-describe 'InvalidArgumentError', ->
-  beforeEach (done) ->
-    @message = 'Invalid argument `sessionId`'
-    @properties =
+      dependencyName: 'helpDoSomething'
+      dependencyType: 'service'
+    expected:
+      message: "Loading 'doSomething': No resolution for dependency 'helpDoSomething' of type 'service'."
+  }
+  {
+    errorType: UnresolvableDependencyTypeError
+    context:
       serviceName: 'doSomething'
-      args:
-        sessionId: 'malformed'
-        timestamp: Date.now()
-    @err = new InvalidArgumentError @message, @properties
-    done()
+      dependencyType: 'service'
+    expected:
+      message: "Loading 'doSomething': No resolution for dependencyType 'service'."
+  }
+]
 
-  it 'should have a correct, descriptive message', (done) ->
-    @err.message.should.equal @message
-    done()
+
+for datum in testData
+  do (datum) ->
+    {errorType, context, expected, start} = datum
+    description = "#{errorType.name}"
+
+    describe description, ->
+      beforeEach (done) ->
+        @context = context or defaultContext
+        @err = new errorType @context
+        should.exist @err, 'Error instance should exist'
+        done()
+
+      it 'should include its context and any other expected properties', (done) ->
+        @err.should.include @context
+        if expected.properties
+          @err.should.include expected.properties
+
+        done()
+
+      it 'should have a correct, descriptive message', (done) ->
+        should.exist @err.message
+        @err.message.should.equal expected.message
+        done()

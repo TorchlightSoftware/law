@@ -1,6 +1,7 @@
 {getType} = require './util'
 chain = require './chain'
 lookupArgumentFilters = require './lookupArgumentFilters'
+{ServiceDefinitionNoCallableError} = require './errors'
 
 module.exports = (services, jargon) ->
 
@@ -10,7 +11,9 @@ module.exports = (services, jargon) ->
 
       typeValidations = lookupArgumentFilters serviceName, serviceDef, jargon
       service = serviceDef.service or serviceDef
-      throw new Error "Could not find function definition for service '#{serviceName}'." unless getType(service) is 'Function'
+      context =
+        serviceName: serviceName
+      throw (new ServiceDefinitionNoCallableError context) unless getType(service) is 'Function'
       service.serviceName = serviceName
 
       # return wrapped service

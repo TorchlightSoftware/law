@@ -4,6 +4,7 @@ generateFilter = require './generateFilter'
   FailedArgumentLookupError
   MissingArgumentError
   InvalidArgumentError
+  InvalidServiceDefinitionError
 } = require './errors'
 
 # generate validations that will be added to the filter stack
@@ -67,8 +68,7 @@ generateValidations = (serviceName, name, types, required) ->
             merge context, {reason: 'invalidValue', requiredType: t.typeName}
             merge context, extraContext
 
-            error = new Error "#{serviceName} requires '#{name}' to be a valid #{t.typeName}."
-            return next error, context
+            return next (new InvalidArgumentError context)
 
           else
             return next()
@@ -81,33 +81,12 @@ generateValidations = (serviceName, name, types, required) ->
 
 module.exports =
   (jargon) ->
-
     # get a list of filter functions for a set of required/optional fields
-    generateDefaultValidations: (serviceName, fieldNames, required) ->
+    (serviceName, fieldNames, required) ->
       validations =
         for name in fieldNames
           types = (word for word in jargon when word.defaultArgs and name in word.defaultArgs)
           vals = generateValidations serviceName, name, types, required
           vals
-
-      return flatten validations
-
-    # get a list of filter functions for a set of detailed param specs
-    generateValidationsFromParams: (serviceName, paramSpecs) ->
-      validations =
-        for param in paramSpecs
-
-          # throw if required fields not present in spec
-          for field in ['name', 'required', 'validation']
-            throw new Error "#{serviceName}.paramSpecs must contain '#{field}'." unless field in param.keys()
-
-          # find types and wrap in validations
-          if getType(param.validation) is 'Function'
-            param.validation
-
-          else
-            param.validation = [param.validation] unless Array.isArray param.validation
-            types = (word for word in jargon when word.typeName in param.validation)
-            generateValidations serviceName, param.name, types, param.required
 
       return flatten validations

@@ -1,8 +1,9 @@
 {getType} = require './util'
 createServiceFilters = require './createServiceFilters'
+{FailedArgumentLookupError} = require './errors'
 
 module.exports = (serviceName, serviceDef, jargon) ->
-  {generateDefaultValidations, generateValidationsFromParams} = createServiceFilters jargon
+  generateDefaultValidations = createServiceFilters jargon
 
   switch getType serviceDef
 
@@ -11,7 +12,7 @@ module.exports = (serviceName, serviceDef, jargon) ->
 
     when 'Object'
       validations = []
-      {required, optional, params} = serviceDef
+      {required, optional} = serviceDef
 
       if required
         validations = validations.concat generateDefaultValidations serviceName, required, true
@@ -19,10 +20,7 @@ module.exports = (serviceName, serviceDef, jargon) ->
       if optional
         validations = validations.concat generateDefaultValidations serviceName, optional, false
 
-      if params
-        validations = validations.concat generateValidationsFromParams serviceName, params
-
       return validations
 
     else
-      throw new Error "Service '#{serviceName}' is not an object or a function."
+      throw (new FailedArgumentLookupError {serviceName})
