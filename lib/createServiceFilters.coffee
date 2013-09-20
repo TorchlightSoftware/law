@@ -31,7 +31,7 @@ generateValidations = (serviceName, name, types, required) ->
         else
           next()
 
-  # check existance
+  # check existence
   addTo stack, generateFilter "#{name}.exists", (args, next) ->
 
     # only check if it's not present but required
