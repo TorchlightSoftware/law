@@ -4,11 +4,11 @@ should = require 'should'
   LawError
   FailedArgumentLookupError
   InvalidArgumentError
+  InvalidArgumentsObjectError
   InvalidServiceNameError
   MissingArgumentError
   NoFilterArrayError
   ServiceDefinitionNoCallableError
-  ServiceDefinitionSignatureError
   ServiceDefinitionTypeError
   ServiceReturnTypeError
   UnresolvableDependencyError
@@ -37,6 +37,11 @@ testData = [
       message: "'doSomething' requires 'sessionId' to be a valid 'SessionId'."
   }
   {
+    errorType: InvalidArgumentsObjectError
+    expected:
+      message: "'doSomething' requires an arguments object as the first argument."
+  }
+  {
     errorType: InvalidServiceNameError
     expected:
       message: "Error loading policy: 'doSomething' is not a valid service name."
@@ -55,11 +60,6 @@ testData = [
     errorType: ServiceDefinitionNoCallableError
     expected:
       message: "Could not find function definition for service 'doSomething'."
-  }
-  {
-    errorType: ServiceDefinitionSignatureError
-    expected:
-      message: "'doSomething' requires an arguments object as the first argument."
   }
   {
     errorType: ServiceDefinitionTypeError

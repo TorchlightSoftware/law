@@ -26,6 +26,16 @@ class InvalidArgumentError extends LawError
     super message, context, start
 
 
+class InvalidArgumentsObjectError extends LawError
+  name: 'LawError/InvalidArgumentsObject'
+
+  constructor: (context, start) ->
+    {serviceName} = context
+    message = "'#{serviceName}' requires an arguments object as the first argument."
+
+    super message, context, start
+
+
 class InvalidServiceNameError extends LawError
   name: 'LawError/InvalidServiceName'
 
@@ -65,14 +75,7 @@ class ServiceDefinitionNoCallableError extends LawError
     super message, context, start
 
 
-class ServiceDefinitionSignatureError extends LawError
-  name: 'LawError/ServiceDefinitionSignature'
 
-  constructor: (context, start) ->
-    {serviceName} = context
-    message = "'#{serviceName}' requires an arguments object as the first argument."
-
-    super message, context, start
 
 
 class ServiceDefinitionTypeError extends LawError
@@ -119,11 +122,11 @@ module.exports = {
   LawError
   FailedArgumentLookupError
   InvalidArgumentError
+  InvalidArgumentsObjectError
   InvalidServiceNameError
   MissingArgumentError
   NoFilterArrayError
   ServiceDefinitionNoCallableError
-  ServiceDefinitionSignatureError
   ServiceDefinitionTypeError
   ServiceReturnTypeError
   UnresolvableDependencyError

@@ -1,5 +1,5 @@
 {getType} = require './util'
-{ServiceDefinitionSignatureError, ServiceReturnTypeError} = require './errors'
+{InvalidArgumentsObjectError, ServiceReturnTypeError} = require './errors'
 
 
 # execute a stack of services (similar to async.waterfall)
@@ -15,7 +15,7 @@ module.exports = (serviceName, input, stack, cb, dependencies) ->
     context =
       serviceName: serviceName
       input: input
-    return cb (new ServiceDefinitionSignatureError context)
+    return cb (new InvalidArgumentsObjectError context)
   unless Array.isArray(stack) and stack.length > 0
     return cb()
 
