@@ -1,10 +1,8 @@
 {getType, addTo, compact, flatten, merge} = require './util'
 generateFilter = require './generateFilter'
 {
-  FailedArgumentLookupError
   MissingArgumentError
   InvalidArgumentError
-  InvalidServiceDefinitionError
 } = require './errors'
 
 # generate validations that will be added to the filter stack
