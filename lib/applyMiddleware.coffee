@@ -2,7 +2,7 @@
 chain = require './chain'
 lookupArgumentFilters = require './lookupArgumentFilters'
 
-module.exports = (services, jargon) ->
+module.exports = (services, jargon=[]) ->
 
   wrappedServices = {}
   for serviceName, serviceDef of services

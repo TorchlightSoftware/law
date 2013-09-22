@@ -2,7 +2,7 @@ should = require 'should'
 {join} = require 'path'
 
 # lib stuff
-{load, process, applyPolicy, applyDependencies, print, create, print} = require '../lib/main'
+{load, applyDependencies, create} = require '../lib/main'
 
 # sample stuff
 jargon = require '../sample/app/domain/auth/jargon'
@@ -11,8 +11,8 @@ policy = require '../sample/app/domain/auth/policy'
 
 describe 'dependency', ->
   beforeEach (done) ->
-    defs = load serviceLocation
-    @services = create defs, jargon, policy
+    services = load serviceLocation
+    @services = create {services, jargon, policy}
 
     @sessionId = 'ab23ab23ab23ab23'
     should.exist @services.doSomething
