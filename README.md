@@ -116,7 +116,7 @@ resolvers = {
   myLoader: (name) -> loadIt(name)
 }
 
-law.create services, jargon, policy, resolvers
+law.create {services, jargon, policy, resolvers}
 ```
 
 
@@ -131,7 +131,7 @@ Through this approach we accomplish the following:
 Because the structure binding these pieces together is declarative, we can easily make it visible for analysis and troubleshooting.  Here is a printout from the sample application.
 
 ```coffee-script
-#> console.log law.print services
+#> console.log law.printFilters services
 
 { dashboard: [ 'filters/isLoggedIn', 'filters/setIsOnline', 'dashboard' ],
   'filters/isLoggedIn':
@@ -158,15 +158,16 @@ should = require 'should'
 
 # lib stuff
 connect = require 'connect'
-{create, print} = require 'law'
+{load, create, printFilters} = require 'law'
 
 # files from the sample app
 serviceLocation = join __dirname, '../sample/app/domain/auth/services'
 argTypes = require '../sample/app/domain/auth/jargon'
 policy = require '../sample/app/domain/auth/policy'
 
-services = create serviceLocation, argTypes, policy
-console.log "I am the law:", print services
+services = load serviceLocation
+services = create {services, jargon, policy}
+console.log "I am the law:", printFilters services
 ```
 
 This gives you a hash of {serviceName, serviceDef}.  Now if you wanted to use that, say as connect middleware, you could write up some basic routing like so.
