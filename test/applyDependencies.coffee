@@ -3,7 +3,7 @@ should = require 'should'
 {join} = require 'path'
 
 # lib stuff
-{load, process, applyPolicy, applyDependencies, print, create, print} = require '../lib/main'
+{load, applyMiddleware, applyPolicy, applyDependencies, create, printFilters} = require '../lib/main'
 {
   UnresolvableDependencyError
   UnresolvableDependencyTypeError
@@ -60,7 +60,7 @@ describe 'applyDependencies', ->
   beforeEach (done) ->
     # replicate use of non-dependency create helper
     defs = load serviceLocation
-    @services = process defs, jargon
+    @services = applyMiddleware defs, jargon
     @services = applyPolicy @services, policy
 
     @sessionId = 'ab23ab23ab23ab23'
@@ -104,7 +104,7 @@ describe 'applyDependencies', ->
   it 'should fail with an error when a dependency is not met', (done) ->
     # declared at top of file
     @services.beUnsatisfied = badServices.beUnsatisfied
-    @services = process @services, jargon
+    @services = applyMiddleware @services, jargon
     @services = applyPolicy @services, policy
 
     try
@@ -118,7 +118,7 @@ describe 'applyDependencies', ->
   it 'should fail with an error when a dependencyType is not resolvable', (done) ->
     # declared at top of file
     @services.haveBadDependencyType = badServices.haveBadDependencyType
-    @services = process @services, jargon
+    @services = applyMiddleware @services, jargon
     @services = applyPolicy @services, policy
 
     try
@@ -132,7 +132,7 @@ describe 'applyDependencies', ->
   it 'should only inject dependencies into their dependent services', (done) ->
     for k, v of orthogonalDependers
       @services[k] = v
-    @services = process @services, jargon
+    @services = applyMiddleware @services, jargon
     @services = applyPolicy @services, policy
     @services = applyDependencies @services, @resolver
 
@@ -147,7 +147,7 @@ describe 'applyDependencies', ->
 
   it 'should work when the service has no metadata', (done) ->
     @services.bare = (args, done) -> done()
-    @services = process @services, jargon
+    @services = applyMiddleware @services, jargon
     @services = applyPolicy @services, policy
     @services = applyDependencies @services, @resolver
     @services.bare {@sessionId}, (err) ->

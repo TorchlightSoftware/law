@@ -1,7 +1,7 @@
 {readdirSync, statSync} = require 'fs'
 {join, basename, extname} = require 'path'
 
-module.exports = getServices = (folder, prefix=null) ->
+module.exports = load = (folder, prefix=null) ->
 
   services = {}
 
@@ -18,7 +18,7 @@ module.exports = getServices = (folder, prefix=null) ->
 
     # recurse on subdirectories
     else if statSync(filePath).isDirectory()
-      for name, def of getServices(filePath, fullname)
+      for name, def of load(filePath, fullname)
         services[name] = def
 
   return services

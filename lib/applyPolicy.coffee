@@ -3,7 +3,7 @@ generateFilter = require './generateFilter'
 {InvalidServiceNameError, NoFilterArrayError} = require './errors'
 
 
-getPolicy = (services, policy) ->
+getPolicy = (services, policy=[]) ->
 
   # we'll apply a prefix if we have one
   applyPrefix =

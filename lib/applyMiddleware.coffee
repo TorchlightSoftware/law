@@ -3,7 +3,7 @@ chain = require './chain'
 lookupArgumentFilters = require './lookupArgumentFilters'
 {ServiceDefinitionNoCallableError} = require './errors'
 
-module.exports = (services, jargon) ->
+module.exports = (services, jargon=[]) ->
 
   wrappedServices = {}
   for serviceName, serviceDef of services
