@@ -69,6 +69,10 @@ describe 'applyDependencies', ->
 
     done()
 
+  it "should not error with empty resolvers", (done) ->
+    @services = applyDependencies @services, @resolver
+    done()
+
   it "should create a 'dependency' field in the exposed service", (done) ->
     @services = applyDependencies @services, @resolver
     # a service with declared dependencies

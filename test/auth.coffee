@@ -20,7 +20,15 @@ describe "auth", ->
       (typeof serviceDefs.getRole).should.eql 'object'
       done()
 
-  describe "wrapServicesInMiddleware", ->
+  describe "applyMiddleware", ->
+    it 'should not error with empty jargon', (done) ->
+      serviceDefs = load serviceLocation
+      services = applyMiddleware serviceDefs # no jargon
+
+      (typeof services.login).should.eql 'function'
+      (typeof services.getRole).should.eql 'function'
+      done()
+
     it 'should generate usable services', (done) ->
       serviceDefs = load serviceLocation
       services = applyMiddleware serviceDefs, jargon
@@ -29,11 +37,20 @@ describe "auth", ->
       (typeof services.getRole).should.eql 'function'
       done()
 
-  describe "attachFilters", ->
+  describe "applyPolicy", ->
     it 'should apply policy to services', (done) ->
       serviceDefs = load serviceLocation
       services = applyMiddleware serviceDefs, jargon
       filteredServices = applyPolicy services, policy
+
+      (typeof services.login).should.eql 'function'
+      (typeof services.getRole).should.eql 'function'
+      done()
+
+    it 'should apply empty policy', (done) ->
+      serviceDefs = load serviceLocation
+      services = applyMiddleware serviceDefs, jargon
+      filteredServices = applyPolicy services # no policy
 
       (typeof services.login).should.eql 'function'
       (typeof services.getRole).should.eql 'function'

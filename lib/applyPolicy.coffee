@@ -1,7 +1,8 @@
 {startsWith} = require './util'
 generateFilter = require './generateFilter'
 
-getPolicy = (services, policy=[]) ->
+getPolicy = (services, policy={}) ->
+  policy.rules or= []
 
   # we'll apply a prefix if we have one
   applyPrefix =
