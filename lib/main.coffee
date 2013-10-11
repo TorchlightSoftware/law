@@ -40,3 +40,6 @@ module.exports = law =
   # graphs induced by the various dependency types, especially
   # the 'services' dependencyType.
   graph: require './graph'
+
+  # Export 'errors' module for extensions to depend upon.
+  errors: require './errors'

@@ -1,5 +1,9 @@
 {merge} = require './util'
 coreResolvers = require './coreResolvers'
+{
+  UnresolvableDependencyError
+  UnresolvableDependencyTypeError
+} = require './errors'
 
 # extend the service calls to insert dependencies
 # this has to happen after all services have been loaded, in order
@@ -18,7 +22,10 @@ module.exports = (services, providedResolvers) ->
     for dependencyType, dependencyNames of serviceDef.dependencies
 
       unless resolvers[dependencyType]?
-        throw new Error "Loading '#{serviceName}': No resolution for dependencyType '#{dependencyType}'."
+        context =
+          serviceName: serviceName
+          dependencyType: dependencyType
+        throw (new UnresolvableDependencyTypeError context)
 
       # initialize sub-object for this dependencyType
       dependencies[dependencyType] = {}
@@ -29,7 +36,11 @@ module.exports = (services, providedResolvers) ->
         resolved = resolvers[dependencyType] dependencyName
 
         unless resolved?
-          throw new Error "Loading '#{serviceName}': No resolution for dependency '#{dependencyName}' of type '#{dependencyType}'."
+          context =
+            serviceName: serviceName
+            dependencyName: dependencyName
+            dependencyType: dependencyType
+          throw (new UnresolvableDependencyError context)
 
         dependencies[dependencyType][dependencyName] = resolved
 

@@ -62,5 +62,5 @@ describe 'chain', ->
 
     chain null, 'testService', 'foo', [], (err, args) ->
       should.exist err?.message, 'expected error'
-      err.message.should.eql 'testService requires an arguments object as the first argument.'
+      err.message.should.eql "'testService' requires an arguments object as the first argument."
       done()
