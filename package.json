@@ -1,7 +1,7 @@
 {
   "name":"law",
   "description":"Tools to create policy and validations for services.",
-  "version":"0.2.3",
+  "version":"0.2.4",
   "homepage":"http://github.com/TorchlightSoftware/law",
   "repository":"git://github.com/TorchlightSoftware/law.git",
   "author":"Brandon Mason <info@torchlightsoftware.com> (http://torchlightsoftware.com)",
@@ -12,6 +12,7 @@
   },
   "devDependencies":{
     "mocha":"*",
+    "torch":"*",
     "should":"*"
   },
   "engines":{

@@ -46,7 +46,7 @@ module.exports = (services, providedResolvers) ->
       # inject the dependencies into the base service,
       # while leaving the rest of the callStack untouched
       serviceDef.callStack[baseServiceIndex] = (args, done) ->
-        f args, done, serviceDef.dependencies
+        f.call @, args, done, serviceDef.dependencies
 
   # services have been modified internally
   return services

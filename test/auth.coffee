@@ -1,4 +1,5 @@
 should = require 'should'
+logger = require 'torch'
 {join} = require 'path'
 
 # lib stuff
@@ -61,6 +62,13 @@ describe "auth", ->
       services = load serviceLocation
       @services = create {services, jargon, policy}
       done()
+
+    it 'should maintain binding context', (done) ->
+      @services.relayContext.call {prop: 2}, {}, (err, context) ->
+        #logger.blue {context}
+        should.exist context?.prop
+        context.prop.should.eql 2
+        done()
 
     it 'should allow login to continue unhindered', (done) ->
       @services.login {}, (err, result) ->

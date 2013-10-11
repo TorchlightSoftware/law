@@ -10,6 +10,7 @@ module.exports =
           'login'
           'invalidReturn'
           'sendEmail'
+          'relayContext'
         ]
       }
 

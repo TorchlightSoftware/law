@@ -17,7 +17,7 @@ module.exports = (services, jargon=[]) ->
       wrapper = (params, done, dependencies) ->
 
         # execute the call stack
-        chain serviceName, params, wrapper.callStack, done, dependencies
+        chain @, serviceName, params, wrapper.callStack, done, dependencies
 
       # attach meta-data
       wrapper.serviceName = serviceName
