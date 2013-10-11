@@ -52,12 +52,12 @@ applyPolicy = (services, policy) ->
   policyMap = getPolicy services, policy
 
   # return the original services with the new filters prepended
-  wrappedServices = {}
-  for name of services
-    filters = for filter in policyMap[name]
-      generateFilter filter, services[filter]
-    wrappedServices[name] = services[name]
-    wrappedServices[name].prepend filters
-  return wrappedServices
+  for name, def of services
+    filters = for filterName in policyMap[name]
+      generateFilter filterName, services[filterName]
+
+    services[name].prepend filters
+
+  return services
 
 module.exports = applyPolicy
