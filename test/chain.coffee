@@ -13,7 +13,7 @@ describe 'chain', ->
     chain null, 'testService', {}, [fooService, barService], (err, args) ->
       should.not.exist err
       should.exist args
-      args.should.be.a 'object'
+      args.should.eql {}
       done()
 
   it 'should return proper signature in case of an error', (done) ->
@@ -29,7 +29,7 @@ describe 'chain', ->
       should.exist err, 'expected error'
       err.should.eql new Error 'yo'
       should.exist args, 'expected args'
-      args.should.be.a 'object'
+      args.should.eql {}
       done()
 
   it 'should retain meta info in case of an error', (done) ->
