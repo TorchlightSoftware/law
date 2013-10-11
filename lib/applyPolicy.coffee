@@ -35,7 +35,7 @@ getPolicy = (services, policy={}) ->
     else if rule.except?
       validateServices rule.except
 
-      for service in Object.keys services
+      for service of services
 
         # don't apply it to the exceptions, to any other filters, or to things not matching applyTo
         continue if service in rule.except
@@ -53,7 +53,7 @@ applyPolicy = (services, policy) ->
 
   # return the original services with the new filters prepended
   wrappedServices = {}
-  for name in Object.keys services
+  for name of services
     filters = for filter in policyMap[name]
       generateFilter filter, services[filter]
     wrappedServices[name] = services[name]
