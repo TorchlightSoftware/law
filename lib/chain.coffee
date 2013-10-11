@@ -1,4 +1,6 @@
 {getType} = require './util'
+{InvalidArgumentsObjectError, ServiceReturnTypeError} = require './errors'
+
 
 # execute a stack of services (similar to async.waterfall)
 module.exports = (serviceName, input, stack, cb, dependencies) ->
@@ -10,7 +12,10 @@ module.exports = (serviceName, input, stack, cb, dependencies) ->
 
   # validations
   unless getType(input) is 'Object'
-    return cb (new Error "#{serviceName} requires an arguments object as the first argument."), {input: input}
+    context =
+      serviceName: serviceName
+      input: input
+    return cb (new InvalidArgumentsObjectError context)
   unless Array.isArray(stack) and stack.length > 0
     return cb()
 
@@ -25,7 +30,11 @@ module.exports = (serviceName, input, stack, cb, dependencies) ->
     stack[index] args, (err, results) ->
       results ||= {}
       unless getType(results) is 'Object'
-        return cb (new Error "#{stack[index].serviceName or serviceName} must return an object."), {results: results}
+        context =
+          serviceName: stack[index].serviceName or serviceName
+          results: results
+        return cb (new ServiceReturnTypeError context)
+
       return cb err, results if err
       callNext index + 1, results
 

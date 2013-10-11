@@ -4,6 +4,10 @@ should = require 'should'
 
 # lib stuff
 {load, applyMiddleware, applyPolicy, applyDependencies, create, printFilters} = require '../lib/main'
+{
+  UnresolvableDependencyError
+  UnresolvableDependencyTypeError
+} = require '../lib/errors'
 
 # sample stuff
 jargon = require '../sample/app/domain/auth/jargon'
@@ -111,6 +115,7 @@ describe 'applyDependencies', ->
       @services = applyDependencies @services, @resolver
     catch err
       should.exist err
+      (err instanceof UnresolvableDependencyError).should.be.true
       err.message.should.equal "Loading 'beUnsatisfied': No resolution for dependency 'nonexistentService' of type 'services'."
       done()
 
@@ -124,6 +129,7 @@ describe 'applyDependencies', ->
       @services = applyDependencies @services, @resolver
     catch err
       should.exist err
+      (err instanceof UnresolvableDependencyTypeError).should.be.true
       err.message.should.equal "Loading 'haveBadDependencyType': No resolution for dependencyType 'badDependencyType'."
       done()
 

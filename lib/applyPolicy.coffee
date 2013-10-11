@@ -1,5 +1,7 @@
 {startsWith} = require './util'
 generateFilter = require './generateFilter'
+{InvalidServiceNameError, NoFilterArrayError} = require './errors'
+
 
 getPolicy = (services, policy={}) ->
   policy.rules or= []
@@ -14,7 +16,9 @@ getPolicy = (services, policy={}) ->
   # check to see that services used in policy are valid
   validateServices = (serviceNames) ->
     for name in serviceNames
-      throw new Error "Error loading policy: '#{name}' is not a valid service name." unless services[name]
+      context =
+        serviceName: name
+      throw (new InvalidServiceNameError context) unless services[name]
 
   # filter stack by service name
   policyMap = {}
@@ -23,7 +27,8 @@ getPolicy = (services, policy={}) ->
 
   # apply each rule to matching services
   for rule in policy.rules
-    throw new Error "Error loading policy: Validations must contain array of filters." unless rule.filters?
+    context = {rule}
+    throw new NoFilterArrayError context unless rule.filters?
     filters = rule.filters.map applyPrefix
     validateServices filters
 
