@@ -18,6 +18,9 @@ module.exports = (services, jargon=[]) ->
 
       # return wrapped service
       wrapper = (params, done, dependencies) ->
+        if arguments.length is 1
+          done = params
+          params = {}
 
         # execute the call stack
         chain @, serviceName, params, wrapper.callStack, done, dependencies

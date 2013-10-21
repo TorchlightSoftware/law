@@ -77,6 +77,13 @@ describe "auth", ->
         result.sessionId.should.eql 'foo'
         done()
 
+    it 'should be callable without args', (done) ->
+      @services.login (err, result) ->
+        should.not.exist err
+        should.exist result
+        result.sessionId.should.eql 'foo'
+        done()
+
     it 'should prevent dashboard from being accessed', (done) ->
       @services.dashboard {}, (err, result) ->
         should.exist err?.message, 'expected error'
