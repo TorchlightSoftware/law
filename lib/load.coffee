@@ -1,7 +1,8 @@
 {readdirSync, statSync, existsSync} = require 'fs'
-{join, basename, extname} = require 'path'
+{join, basename, extname, resolve} = require 'path'
 
 module.exports = load = (folder, prefix=null) ->
+  folder = resolve(folder)
 
   services = {}
 
