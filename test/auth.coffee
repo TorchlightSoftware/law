@@ -89,7 +89,7 @@ describe "auth", ->
         should.exist err?.message, 'expected error'
         err.message.should.eql "'filters/isLoggedIn' requires 'sessionId' to be defined."
         for field in ['reason', 'fieldName', 'serviceName']
-          Object.keys(err).should.include field
+          Object.keys(err).should.containEql field
         done()
 
     it 'should require results to be an object', (done) ->
@@ -103,7 +103,7 @@ describe "auth", ->
         @services.getRole {}, (err, result) ->
           should.exist err?.message, 'expected error'
           err.message.should.eql "'getRole' requires 'sessionId' to be defined."
-          err.should.include
+          err.should.containEql
             reason: 'requiredField'
             fieldName: 'sessionId'
             serviceName: 'getRole'
@@ -114,7 +114,7 @@ describe "auth", ->
         @services.sendEmail {email: [], subject: ''}, (err, result) ->
           should.exist err?.message, 'expected error'
           err.message.should.eql 'email is not a string.'
-          err.should.include
+          err.should.containEql
             fieldName: 'email'
             value: []
             serviceName: 'sendEmail'
@@ -130,7 +130,7 @@ describe "auth", ->
           should.exist err?.message, 'expected error'
           err.message.should.eql "'getRole' requires 'sessionId' to be a valid 'SessionId'."
           for field in ['reason', 'fieldName', 'serviceName', 'requiredType']
-            Object.keys(err).should.include field
+            Object.keys(err).should.containEql field
           done()
 
       it 'should pass valid arguments', (done) ->

@@ -104,9 +104,9 @@ for datum in testData
         done()
 
       it 'should include its context and any other expected properties', (done) ->
-        @err.should.include @context
+        @err.should.containEql @context
         if expected.properties
-          @err.should.include expected.properties
+          @err.should.containEql expected.properties
 
         done()
 
