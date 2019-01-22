@@ -3,6 +3,6 @@ module.exports = {
   optional: ['body'],
   service({email, body, subject}, done) {
     // send email
-    done();
-  }
-};
+    done()
+  },
+}

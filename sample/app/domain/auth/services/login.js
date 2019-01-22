@@ -1,2 +1,1 @@
-module.exports = (args, done) =>
-  done(null, {sessionId: 'foo'});
+module.exports = (args, done) => done(null, {sessionId: 'foo'})

@@ -1,2 +1,1 @@
-module.exports = (args, done) =>
-  done(null, 'some string');
+module.exports = (args, done) => done(null, 'some string')

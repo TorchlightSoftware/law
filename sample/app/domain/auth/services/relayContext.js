@@ -1,5 +1,5 @@
 module.exports = {
   service(args, done) {
-    done(null, this);
-  }
-};
+    done(null, this)
+  },
+}
