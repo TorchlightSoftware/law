@@ -21,7 +21,7 @@ The simplest way to define a service is as a bare function that takes a param ob
 ```js
 module.exports = ({sessionId, specialKey}, done) => {
   // check the sessionId against the database
-  done null, {role: 'Supreme Commander'}
+  done(null, {role: 'Supreme Commander'})
 }
 ```
 
@@ -34,7 +34,7 @@ module.exports = {
   optional: ['specialKey'],
   service({sessionId, specialKey}, done) {
     // check the sessionId against the database
-    done null, {role: 'Supreme Commander'}
+    done(null, {role: 'Supreme Commander'})
   }
 }
 ```
@@ -56,21 +56,21 @@ mongoId = /[a-f0-9]{24}/
 
 module.exports = [
   {
-    typeName: 'String'
+    typeName: 'String',
     validation: (arg, assert) =>
-      assert(typeof arg === 'string')
+      assert(typeof arg === 'string'),
     defaultArgs: ['email', 'password', 'sessionId', 'userId']
   },
   {
-    typeName: 'SessionId'
+    typeName: 'SessionId',
     validation: (arg, assert) =>
-      assert(arg.match(redisId))
+      assert(arg.match(redisId)),
     defaultArgs: ['sessionId']
   },
   {
-    typeName: 'MongoId'
+    typeName: 'MongoId',
     validation: (arg, assert) =>
-      assert(arg.match(mongoId))
+      assert(arg.match(mongoId)),
     defaultArgs: ['userId']
   }
 ]
@@ -150,8 +150,6 @@ services
   .catch(err => {throw err})
 ```
 
-Knock yourself out.
-
 ## Dependencies (optional feature)
 
 Since version 0.1.1 Law supports declarative dependency injection.  The two built in loaders are:
@@ -168,7 +166,6 @@ module.exports = {
       services: ['aHelperService'],
       lib: ['lodash']
     },
-
     service: (args, done, {services: {aHelperService}, lib: {lodash}}) => {
       args = lodash.merge({myOpt: 1}, args)
       aHelperService(args, done)
