@@ -5,23 +5,22 @@
   "homepage": "http://github.com/TorchlightSoftware/law",
   "repository": "git://github.com/TorchlightSoftware/law.git",
   "author": "Torchlight Software <info@torchlightsoftware.com>",
-  "main": "./index.js",
-  "dependencies":{
-    "coffee-script":"*",
-    "tea-error":"*"
+  "main": "./lib/main.js",
+  "dependencies": {
+    "tea-error": "^0.2.0"
   },
-  "devDependencies":{
-    "mocha":"*",
-    "torch":"*",
-    "should":"*"
+  "devDependencies": {
+    "mocha": "*",
+    "torch": "*",
+    "should": "*"
   },
-  "engines":{
-    "node":">= 0.8.4"
+  "engines": {
+    "node": ">= 0.8.4"
   },
-  "licenses":[
+  "licenses": [
     {
-      "type":"MIT",
-      "url":"http://github.com/torchlightsoftware/law/raw/master/LICENSE"
+      "type": "MIT",
+      "url": "http://github.com/torchlightsoftware/law/raw/master/LICENSE"
     }
   ],
   "scripts": {
