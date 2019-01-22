@@ -17,5 +17,9 @@ module.exports = {
       filters: ['setIsOnline'],
       only: ['dashboard'],
     },
+    {
+      filters: ['filterAsync'],
+      only: ['doSomethingAsync'],
+    },
   ],
 }

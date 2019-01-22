@@ -103,7 +103,7 @@ describe('applyDependencies', function() {
   })
 
   it('should not error with empty resolvers', function(done) {
-    this.services = applyDependencies(this.services, this.resolver)
+    this.services = applyDependencies(this.services)
     done()
   })
 

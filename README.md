@@ -128,6 +128,30 @@ Because the structure binding these pieces together is declarative, we can easil
 
 This tells you exactly what's going to happen when the `login` service executes.
 
+## Promise Support
+
+As of 1.1.0, you can use promises and async functions with Law:
+
+```js
+module.exports = {
+  required: ['sessionId'],
+  optional: ['specialKey'],
+  service: async ({sessionId, specialKey}) =>
+    ({role: 'Supreme Commander'})
+}
+```
+
+When you call a Law service, if you don't pass a callback, you'll get a Promise:
+
+```js
+services
+  .getRole({sessionId})
+  .then(results => console.debug(results))
+  .catch(err => {throw err})
+```
+
+Knock yourself out.
+
 ## Dependencies (optional feature)
 
 Since version 0.1.1 Law supports declarative dependency injection.  The two built in loaders are:
