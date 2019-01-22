@@ -199,12 +199,15 @@ const {join} = require('path')
 const {load, create, printFilters} = require('law')
 
 // files from the sample app
-const serviceLocation = join(__dirname, '../sample/app/domain/auth/services')
-const argTypes = require('../sample/app/domain/auth/jargon')
+const serviceRoot = join(__dirname, '../sample/app/domain/auth/services')
+const jargon = require('../sample/app/domain/auth/jargon')
 const policy = require('../sample/app/domain/auth/policy')
 
+// load recurses through subdirectories and tries to
+// load any js files it finds
+const services = load(serviceRoot)
+
 // services is just an object with {serviceName: serviceFn}
-const services = load(serviceLocation)
 const services = create({services, jargon, policy})
 console.debug("I am the law:", printFilters(services))
 ```
