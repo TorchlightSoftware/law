@@ -1,8 +1,8 @@
 const should = require('should')
+const chain = require('../lib/chain')
 
 describe('chain', function() {
   it('should chain a set of services', function(done) {
-    const chain = require('../lib/chain')
 
     const fooService = (args, done) => done()
 
@@ -17,7 +17,6 @@ describe('chain', function() {
   })
 
   it('should return proper signature in case of an error', function(done) {
-    const chain = require('../lib/chain')
     const fooService = (args, done) => done(new Error('yo'))
     const barService = (args, done) => done()
 
@@ -31,8 +30,6 @@ describe('chain', function() {
   })
 
   it('should retain meta info in case of an error', function(done) {
-    const chain = require('../lib/chain')
-
     const fooService = function(args, done) {
       const error = new Error('yo')
       done(error, {reason: 'just cus'})
@@ -48,8 +45,6 @@ describe('chain', function() {
   })
 
   it('should pass context', function(done) {
-    const chain = require('../lib/chain')
-
     const contextService = function(args, done) {
       done(null, this)
     }
@@ -62,8 +57,6 @@ describe('chain', function() {
   })
 
   it('should error on invalid input', function(done) {
-    const chain = require('../lib/chain')
-
     chain(null, 'testService', 'foo', [], (err, args) => {
       should.exist(err, 'expected error')
       should.exist(err.message, 'expected error')
@@ -72,5 +65,13 @@ describe('chain', function() {
       )
       done()
     })
+  })
+
+  it('should throw invalid callback', function(done) {
+    const fooService = (args, done) => done()
+    const barService = (args, done) => done()
+
+    chain(null, 'testService', {}, [fooService, barService], 'foo')
+    done()
   })
 })
