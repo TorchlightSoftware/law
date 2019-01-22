@@ -2,125 +2,102 @@
 
 Less strictly constitutional and more strictly awesome.
 
-This project was motivated by the desire to take a lot of validation and error handling logic out of our services, and put it in a declarative layer.
+Law lets you define services in a transport agnostic way.  Core features in Law are:
 
-Law is a middleware layer for tying together:
+1. required/optional params
+2. input validation
+3. access control policy
 
-1. A set of services
-2. Argument validations and lookups
-3. An access control policy
-
-Law is framework and transport agnostic.  Its focus is on enforcing the business rules specific to your application.  In our applications, we have connected these services to REST, websockets, and a programmatic API through the use of adapters.  I present below an example that should help to tie in as connect middleware.  Hopefully there will be enough information here to make this a useful tool for those interested.  If you're having trouble getting things working, let me know.
+Law services are "just javascript functions".  In our applications, we have connected these services to REST, websockets, gRPC, and a programmatic API through the use of various adapters.
 
 ![Build Status](https://api.travis-ci.org/TorchlightSoftware/law.png)
 
-## Credit/Inspiration
 
-Our approach to policies was inspired by the filter lifecycle from Ruby on Rails.  The argument validations take some ideas from Design By Contract, e.g. preconditions.  Applying validators to default names was suggested by @JosephJNK.  I am interested to see if this will be conducive to creating a 'ubiquitous language' as described by Eric Evans in Domain Driven Design.
+## Sample Service
 
-The separation of Express and Connect has influenced our decision to do the same.  I think that while frameworks can lead to gains in terms of productivity, a library has greater potential for re-use.
+The simplest way to define a service is as a bare function that takes a param object and a callback:
 
-Many thanks to @wearefractal (@amurray, @contra), @JosephJNK, and @uberscientist for conversations and collaboration on application design with functional and declarative programming.
-
-## Application Files
-
-Following are some possible uses of Law.  Further options are described in the [extended documentation].
-
-Here's an example service.  Law will construct a function from this which will enforce the required/optional parameters.  Both optional and required parameters will run any associated validations.
-
-### getRole.coffee
-```coffee-script
-module.exports =
-  required: ['sessionId']
-  optional: ['specialKey']
-  service: ({sessionId, specialKey}, done) ->
-
-    # check the sessionId against the database
-
-    done null, {role: 'Supreme Commander'}
+### getRole.js
+```js
+module.exports = ({sessionId, specialKey}, done) => {
+  // check the sessionId against the database
+  done null, {role: 'Supreme Commander'}
+}
 ```
 
-Here's some example argument types, and their validations.  Law makes these available in the definition of services.  You can think of them as the language that a particular set of services share.  Whenever these names are used in service arguments, their meanings will be enforced by the rules you set here.
+If you're writing anything important, you're going to want some input validations for your service.  Law lets you do this declaratively by defining your service as an object instead, with some special fields that tell Law what kind of rules you want to be applied:
 
-### jargon.coffee
-```coffee-script
+### getRole.js
+```js
+module.exports = {
+  required: ['sessionId'],
+  optional: ['specialKey'],
+  service({sessionId, specialKey}, done) {
+    // check the sessionId against the database
+    done null, {role: 'Supreme Commander'}
+  }
+}
+```
+
+When Law processes this definition, the end result is a *function with the same signature that you started with*.  So it still takes an object and a callback.  It just performs some validations before it runs your service.
+
+## Sample Validations
+
+Now, let's say you want to write some validations that do something more complex than just detect if the value exists.  Law provides a 'jargon' file for that, which you can think of as a set of type definitions.  Instead of being checked at compile time (e.g. TypeScript), they will be checked at runtime, whenever values from the outside world are being passed into your services.
+
+You can also think of this as the language that a particular set of services share (Domain Driven Design).  Whenever these names are used in service arguments, their meanings will be enforced by the rules you set here.
+
+Here's some example argument types, and their validations:
+
+### jargon.js
+```js
 redisId = /[a-z0-9]{16}/
 mongoId = /[a-f0-9]{24}/
 
 module.exports = [
+  {
     typeName: 'String'
-    validation: (arg, assert) ->
-      assert typeof arg is 'string'
+    validation: (arg, assert) =>
+      assert(typeof arg === 'string')
     defaultArgs: ['email', 'password', 'sessionId', 'userId']
-  ,
+  },
+  {
     typeName: 'SessionId'
-    validation: (arg, assert) ->
-      assert arg.match redisId
+    validation: (arg, assert) =>
+      assert(arg.match(redisId))
     defaultArgs: ['sessionId']
-  ,
+  },
+  {
     typeName: 'MongoId'
-    validation: (arg, assert) ->
-      assert arg.match mongoId
+    validation: (arg, assert) =>
+      assert(arg.match(mongoId))
     defaultArgs: ['userId']
+  }
 ]
 ```
 
-Here's an example policy file.  The filters named here are defined as regular services, but they are run in a slightly different context.  If they return an error, the filter stack stops and returns it, otherwise their results are merged into the argument stream and passed on to the next service in the stack.
+Your validations just have to call `assert`, and in return you'll get beautiful error messages that tell you exactly what service was being called and which validation failed.
 
-### policy.coffee
-```coffee-script
-module.exports =
-  filterPrefix: 'filters'
-  rules:
-    [
-      {
-        filters: ['isLoggedIn']
-        except: [
-          'getRole'
-          'login'
-        ]
-      }
+Here's an example policy file.  Filters are just regular services.  If one returns an error, the call stack stops and returns it, otherwise the results are merged into the argument object and passed on to the next service in the call stack.
 
-      {
-        filters: ['setIsOnline']
-        only: ['dashboard']
-      }
-    ]
-```
-
-## Dependencies
-
-Since version 0.1.1 Law supports declarative dependency injection.  The two built in loaders are:
-
-* services: call sibling services
-* lib: a shortcut to require
-
-This lets us do static analysis of dependencies, and can be used as a way of making side effects explicit.
-
-```coffee-script
-module.exports =
-  required: ['sessionId']
-  dependencies:
-    services: ['aHelperService']
-    lib: ['lodash']
-
-  service: (args, done, {services, require}) ->
-    args = lib.lodash.merge {myOpt: 1}, args
-    services.aHelperService args, done
-```
-
-To add more loaders, just plug in a resolvers object when you load your services:
-
-```coffee-script
-resolvers = {
-  myLoader: (name) -> loadIt(name)
+### policy.js
+```js
+module.exports = {
+  filterPrefix: 'filters',
+  rules: [
+    {
+      filters: ['isLoggedIn'],
+      except: ['getRole', 'login']
+    },
+    {
+      filters: ['setIsOnline'],
+      only: ['dashboard']
+    }
+  ]
 }
-
-law.create {services, jargon, policy, resolvers}
 ```
 
-
-## Value
+## Why this is a good thing
 
 Through this approach we accomplish the following:
 
@@ -128,10 +105,16 @@ Through this approach we accomplish the following:
 2. Access control is described in one place
 3. The preconditions for services are declarative
 
+Standardizing on receiving arguments as an object allows Law to be very flexible and minimize your code maintenance costs.  You can always add new arguments, and new policy layers that are concerned with them.  Services that aren't concerned with the new arguments can ignore them and don't need to be modified.
+
+Having your "domain language" explicit and in one file makes it very easy for newcomers to get familiar with the project.  Having the policy rules as a simple JSON object helps enormously in clarity, and to avoid mistakes in how they are applied.
+
+Because the compositional tools are so good, we can write really small bits of code that are reusable.  This makes the code overall much easier to read and maintain.
+
 Because the structure binding these pieces together is declarative, we can easily make it visible for analysis and troubleshooting.  Here is a printout from the sample application.
 
-```coffee-script
-#> console.log law.printFilters services
+```js
+#> console.debug(law.printFilters(services))
 
 { dashboard: [ 'filters/isLoggedIn', 'filters/setIsOnline', 'dashboard' ],
   'filters/isLoggedIn':
@@ -143,139 +126,97 @@ Because the structure binding these pieces together is declarative, we can easil
   login: [ 'login' ] }
 ```
 
+This tells you exactly what's going to happen when the `login` service executes.
+
+## Dependencies (optional feature)
+
+Since version 0.1.1 Law supports declarative dependency injection.  The two built in loaders are:
+
+* services: call sibling services
+* lib: a shortcut to require
+
+This lets us do static analysis of dependencies, and can be used as a way of making side effects explicit.
+
+```js
+module.exports = {
+    required: ['sessionId'],
+    dependencies: {
+      services: ['aHelperService'],
+      lib: ['lodash']
+    },
+
+    service: (args, done, {services: {aHelperService}, lib: {lodash}}) => {
+      args = lodash.merge({myOpt: 1}, args)
+      aHelperService(args, done)
+    }
+}
+```
+
+To add more loaders, just plug in a resolvers object when you load your services:
+
+```js
+const resolvers = {
+  myLoader: (name) => loadIt(name)
+}
+
+const services = law.create({services, jargon, policy, resolvers})
+```
+
 ## Getting Started
 
 ```bash
-npm install law
+npm install -S law
 ```
 
-Before you can start using the facilities mentioned above in your app, you'll need to wire some things up.  This being a library intended to support a not-yet-released framework, no assumptions are made about the locations of your files.  You'll need something like the following to initialize and connect the services when your application starts.
+The only dependency is `tea-error` and the final package size is `11kB`.
 
-### initLaw.coffee
-```coffee-script
-should = require 'should'
-{join} = require 'path'
+Law is a library, not a framework, so it doesn't make assumptions about location of your files.  You'll need something like the following to initialize and connect the services when your application starts.
 
-# lib stuff
-connect = require 'connect'
-{load, create, printFilters} = require 'law'
+### initLaw.js
+```js
+const {join} = require('path')
+const {load, create, printFilters} = require('law')
 
-# files from the sample app
-serviceLocation = join __dirname, '../sample/app/domain/auth/services'
-argTypes = require '../sample/app/domain/auth/jargon'
-policy = require '../sample/app/domain/auth/policy'
+// files from the sample app
+const serviceLocation = join(__dirname, '../sample/app/domain/auth/services')
+const argTypes = require('../sample/app/domain/auth/jargon')
+const policy = require('../sample/app/domain/auth/policy')
 
-services = load serviceLocation
-services = create {services, jargon, policy}
-console.log "I am the law:", printFilters services
+// services is just an object with {serviceName: serviceFn}
+const services = load(serviceLocation)
+const services = create({services, jargon, policy})
+console.debug("I am the law:", printFilters(services))
 ```
 
-This gives you a hash of {serviceName, serviceDef}.  Now if you wanted to use that, say as connect middleware, you could write up some basic routing like so.
-
-### connectAdapter.coffee
-```coffee-script
-app = connect()
-app.use (req, res) ->
-
-  # find service to call, or return 404
-  pathParts = req._parsedUrl.pathname.split('/').remove ''
-  resourceName = pathParts[0]
-  service = resourceMap[resourceName] or ->
-    res.writeHead 404
-    res.end()
-
-  # call service
-  service {
-      url: req.url
-      headers: req.headers
-      query: req.query || {}
-      pathParts: pathParts
-      cookies: req.cookies
-    }, res
-
+Output:
+```txt
+{ dashboard: [ 'filters/isLoggedIn', 'filters/setIsOnline', 'dashboard' ],
+  'filters/isLoggedIn':
+   [ 'sessionId.exists',
+     'sessionId.isValid(SessionId)',
+     'filters/isLoggedIn' ],
+  'filters/setIsOnline': [ 'filters/setIsOnline' ],
+  getRole: [ 'sessionId.exists', 'sessionId.isValid(SessionId)', 'getRole' ],
+  login: [ 'login' ] }
 ```
-## Error codes
-Law provides standard subtypes of `Error`, enriched using the `tea-error`
-library (https://github.com/qualiancy/tea-error). This means a `properties`
-object can be attached to the `Error` instance upon construction, as well
-as an indicator of the function that the stack trace should start from.
 
-We provide a `LawError` subtype of `Error` that acts as a common parent to
-all the more specific error subtypes. Extensions to Law should extend this
-type to obtain the benefits of `tea-error`, as well as permitting distinction
-between instances of Law errors from application errors.
-
-### LawError
-Common parent type of errors within the Law library (and extensions).
-Endowed with extra metadata couresty `tea-error`.
-
-### FailedArgumentLookupError
-Unused.
-
-### InvalidArgumentError
-An argument passed to a Law service exists, but has failed a validation.
-Occurs at call time
-
-### InvalidArgumentsObjectError
-The `args` argument of a service call was not an instance of `object`.
-Occurs at call time.
-
-### InvalidServiceNameError
-A serviceName that appears in the policy file has no referent amongst the actual
-discovered services. Occurs when processing the policy file.
-
-### MissingArgumentError
-A required argument was not present in the `args` object passed to the service.
-Occurs at call time.
-
-### NoFilterArrayError
-Thrown when a (malformed) rule in the policy file does not have any filters.
-Occurs at setup time, when applying policy rules to services.
-
-### ServiceDefinitionNoCallableError
-A service definition did not provide a callable (instance of `function`).
-Occurs when when wrapping services at setup time.
-
-### ServiceDefinitionTypeError
-The service definition was neither a function nor a richer service definition
-object containing metadata and optional Law declarations. Occurs at setup time.
-
-### ServiceReturnTypeError
-The return value of a service (chained in a computed stack of services) is
-not an object. Occurs at call time.
-
-### UnresolvableDependencyError
-A particular dependency in a valid (resolvable) dependency category could
-not be resolved using the configuration given
-
-### UnresolvableDependencyTypeError
-A service declared an unresolvable dependency category. For example, if the
-resolver configuration doesn't define a way to resolve dependencies in a
-`services` category, this error would be thrown. Occurs at setup time, when
-resolving dependencies.
+Now if you want to expose these via HTTP, you can use our [law-connect](https://github.com/torchlightsoftware/law-connect) plugin.  If you're using gRPC, websockets, or some other protocol, it should be just a few lines of code to create an adapter.  Let us know if you make an adapter for a new protocol and we'll link to it here!
 
 ## Further Reading
 
-You can find [extended documentation here].
+[Error Codes](docs/errors.md)
 
-## Project Status
+## Credit/Inspiration
 
-This should be considered an alpha release.  The API may change.  It was developed within an active project with the intent to only build the features which give us a clear advantage.  Additional features will be added as required for the parent project.
+Our approach to policies was inspired by the filter lifecycle from Ruby on Rails.  The argument validations take some ideas from Design By Contract, e.g. preconditions.  Applying validators to default names was suggested by @JosephJNK.  I am interested to see if this will be conducive to creating a 'ubiquitous language' as described by Eric Evans in Domain Driven Design.
 
-Discussion/feedback is welcome.  You can reach me on twitter @qbitmage.
-
-Future goals/possibilities:
-
-1. Unit tests for each component file.
-2. Standard adapters for websocket RPC, REST
-3. Enforce post-conditions?
-4. Development of a contract-driven web framework.
+Many thanks to @wearefractal (@amurray, @contra), @JosephJNK, and @uberscientist for conversations and collaboration on application design with functional and declarative programming.
 
 ## The Fine Print
 
 (MIT License)
 
-Copyright (c) 2013 Torchlight Software <info@torchlightsoftware.com>
+Copyright (c) 2019 Torchlight Software <info@torchlightsoftware.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
