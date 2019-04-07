@@ -150,7 +150,7 @@ services
   .catch(err => {throw err})
 ```
 
-## Dependencies (optional feature)
+## Dependencies
 
 Since version 0.1.1 Law supports declarative dependency injection.  The two built in loaders are:
 
@@ -182,6 +182,21 @@ const resolvers = {
 
 const services = law.create({services, jargon, policy, resolvers})
 ```
+
+You can also use `*` if you want to receive all services (for instance if you are calling subservices dynamically).
+
+```js
+module.exports = {
+    dependencies: {
+      services: '*',
+    },
+    service: (args, done, {services}) => {
+      // call any service you want to here
+      services.aHelperService(args, done)
+    }
+}
+```
+
 
 ## Getting Started
 

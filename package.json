@@ -1,7 +1,7 @@
 {
   "name": "law",
   "description": "Tools to create policy and validations for services.",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "homepage": "http://github.com/TorchlightSoftware/law",
   "repository": "git://github.com/TorchlightSoftware/law.git",
   "author": "Torchlight Software <info@torchlightsoftware.com>",

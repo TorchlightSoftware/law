@@ -95,6 +95,7 @@ describe('applyDependencies', function() {
 
     this.resolver = {
       services: serviceName => {
+        if (serviceName === 'handleStar') return this.services
         return this.services[serviceName]
       },
     }
@@ -204,6 +205,25 @@ describe('applyDependencies', function() {
     this.services = applyDependencies(this.services, this.resolver)
     this.services.bare({sessionId: this.sessionId}, function(err) {
       should.not.exist(err)
+      done()
+    })
+  })
+
+  it('should load all services', function(done) {
+    this.services = {...orthogonalDependers}
+    this.services.toRuleThemAll = {
+      dependencies: {
+        services: '*',
+      },
+      service(args, next, {services}) {
+        next(null, {services: Object.keys(services)})
+      },
+    }
+    this.services = applyMiddleware(this.services, jargon)
+    this.services = applyDependencies(this.services, this.resolver)
+    this.services.toRuleThemAll({}, function(err, {services}) {
+      should.not.exist(err)
+      services.should.eql(['doThis', 'helpDoThis', 'doThat', 'helpDoThat', 'toRuleThemAll'])
       done()
     })
   })
